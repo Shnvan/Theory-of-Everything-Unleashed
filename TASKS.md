@@ -7,13 +7,13 @@ Only check a task after its acceptance condition has been tested.
 ## M0 — Project setup
 
 - [ ] Create a private Roblox experience named `Theory of Everything: Unleashed — Prototype`.
-- [ ] Create the Studio code folders described in `docs/STUDIO_IDE_WORKFLOW.md`.
-- [ ] Sync the three code folders to `src/shared`, `src/server`, and `src/client`.
-- [ ] Open this repository root in the external IDE.
-- [ ] Install a Luau language-server extension.
-- [ ] Initialize Git and make a documentation baseline commit.
-- [ ] Optional: connect a trusted AI client through Studio MCP.
-- [ ] Run one solo playtest and one server-with-two-clients playtest.
+- [x] Create the Studio code folders described in `docs/STUDIO_IDE_WORKFLOW.md`.
+- [x] Sync the three code folders to `src/shared`, `src/server`, and `src/client`.
+- [x] Open this repository root in the external IDE.
+- [x] Install a Luau language-server extension.
+- [x] Initialize Git and make a documentation baseline commit.
+- [x] Optional: connect a trusted AI client through Studio MCP.
+- [x] Run one solo playtest and one server-with-two-clients playtest.
 
 **M0 exit condition:** editing a test ModuleScript in the IDE updates Studio, and a two-client Studio test starts without errors.
 
