@@ -19,7 +19,7 @@ Only check a task after its acceptance condition has been tested.
 
 ## M1 — Movement and combat states
 
-- [x] Build and validate the expanded graybox arena with eight safe spawns, scattered non-colliding exhibits, and clear traversal lanes.
+- [x] Build and validate the ten-area graybox arena with eight safe spawns, 5× physical exhibits, a clear traversal lane, and tested perimeter containment.
 - [ ] Implement input mapping for keyboard/mouse and touch.
 - [ ] Implement the shared combat state machine.
 - [ ] Implement sprint and directional dash.

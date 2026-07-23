@@ -25,7 +25,7 @@ Build the universal combat foundation and a small **Gravity Sovereign** vertical
 - Primary mode: continuous public free-for-all battleground.
 - Target server size: eight players.
 - Prototype character: Gravity Sovereign, inspired by Isaac Newton.
-- Prototype environment: one contained graybox arena with an expanded 240-stud combat disc.
+- Prototype environment: one contained graybox arena with an approximately 759-stud combat disc and physical plus fail-safe perimeter containment.
 - Controls: four-hit basic combo, block, dash/limited escape, four future ability slots, character mechanic, and Breakthrough meter.
 - Final Proof is a short stylized KO effect, not a long execution cinematic.
 - Combat uses no blood, dismemberment, torture, or realistic death.

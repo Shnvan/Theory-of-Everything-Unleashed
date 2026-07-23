@@ -25,7 +25,7 @@ These choices are intentionally unresolved. An LLM must not silently decide them
 
 | ID | Resolution | Decision |
 |---|---|---|
-| Q-009 | RESOLVED by D-013 and refined by D-014 on 2026-07-23 | The first arena is **The Omniscience Coliseum**, an expanded Greco-Roman science coliseum with a 240-stud combat disc and static exhibits distributed across its interior. |
+| Q-009 | RESOLVED by D-013 and refined by D-014 and D-015 on 2026-07-23 | The first arena is **The Omniscience Coliseum**, a monumental Greco-Roman science coliseum with an approximately 759-stud contained combat disc and 5× physical exhibits distributed across its interior. |
 
 ## Required before public alpha
 

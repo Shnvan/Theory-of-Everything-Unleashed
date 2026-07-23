@@ -63,7 +63,7 @@ This is a future target, not the current build.
 
 ### Content budget
 
-- One finished arena based on the expanded 240-stud combat disc, roughly seventeen seconds to cross at default movement speed.
+- One finished arena based on the approximately 759-stud combat disc, with an estimated clear-lane crossing time of about 53 seconds at default movement speed.
 - Maximum eight players per server.
 - Three fighters:
   - Gravity Sovereign.
