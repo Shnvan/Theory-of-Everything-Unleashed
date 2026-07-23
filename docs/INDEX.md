@@ -13,6 +13,7 @@ Read only the documents needed for the current task, but always read the four ma
 | [COMBAT_SYSTEM.md](COMBAT_SYSTEM.md) | Universal controls, rules, states, and tunables | Combat work |
 | [CHARACTER_ROSTER.md](CHARACTER_ROSTER.md) | Master roster and release order | Character planning |
 | [GRAVITY_SOVEREIGN.md](GRAVITY_SOVEREIGN.md) | First fighter's approved slice and draft full kit | Gravity Sovereign work |
+| [OMNISCIENCE_COLISEUM.md](OMNISCIENCE_COLISEUM.md) | First arena layout, exhibit map, graybox limits, and validation | Arena work |
 | [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md) | Client/server boundaries, modules, remotes, coding rules | Any implementation |
 | [STUDIO_IDE_WORKFLOW.md](STUDIO_IDE_WORKFLOW.md) | Studio, external IDE, Script Sync, Git, and testing setup | Initial setup or sync problems |
 | [ROADMAP_AND_TESTING.md](ROADMAP_AND_TESTING.md) | Milestones, acceptance tests, test matrix, validation gate | Planning and QA |

@@ -18,6 +18,7 @@ This file records product direction. Newer explicit user decisions supersede old
 | D-010 | 2026-07-23 | LOCKED | Do not require Rojo for the prototype. | A full file-system-first data model is unnecessary before the project grows. |
 | D-011 | 2026-07-23 | LOCKED | Server authority covers damage, cooldowns, KOs, assists, meter, and respawn. | Competitive PvP cannot trust client-declared results. |
 | D-012 | 2026-07-23 | LOCKED | Monetization is cosmetic-only and begins after combat validation. | Revenue systems cannot rescue an unfun loop; combat power sales damage fairness. |
+| D-013 | 2026-07-23 | LOCKED | The first arena is internally named **The Omniscience Coliseum**, a compact Greco-Roman monument to science and invention. Its M1 version uses static graybox proxies for 24 exhibits and original fighter-title monuments. | Establishes a distinct science-fantasy identity while preserving a readable combat disc and avoiding modern-person likeness or endorsement risk. |
 
 ## Prototype defaults
 

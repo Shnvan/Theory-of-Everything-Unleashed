@@ -19,8 +19,13 @@ These choices are intentionally unresolved. An LLM must not silently decide them
 |---|---|---|
 | Q-007 | Character rig style? | Stylized R15-compatible proportions for animation and avatar familiarity |
 | Q-008 | Visual art direction? | Exaggerated science-superhero silhouettes with simple materials and strong color coding |
-| Q-009 | First arena theme? | A compact fractured observatory or archive with a central landmark |
 | Q-010 | Final title/logo treatment? | Use the current title internally; run trademark and marketplace-confusion checks before release |
+
+## Resolved questions
+
+| ID | Resolution | Decision |
+|---|---|---|
+| Q-009 | RESOLVED by D-013 on 2026-07-23 | The first arena is **The Omniscience Coliseum**, a compact Greco-Roman science coliseum with a central combat disc and surrounding exhibit gallery. |
 
 ## Required before public alpha
 

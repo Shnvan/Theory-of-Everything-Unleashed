@@ -1,6 +1,6 @@
 # Task Board
 
-**Active milestone:** M0 — connect the IDE and Studio, then begin the combat foundation.
+**Active milestone:** M1 — movement and combat states.
 
 Only check a task after its acceptance condition has been tested.
 
@@ -19,7 +19,7 @@ Only check a task after its acceptance condition has been tested.
 
 ## M1 — Movement and combat states
 
-- [ ] Build the graybox arena; traversal from one side to the other should take about ten seconds.
+- [x] Build the graybox arena; traversal from one side to the other should take about ten seconds.
 - [ ] Implement input mapping for keyboard/mouse and touch.
 - [ ] Implement the shared combat state machine.
 - [ ] Implement sprint and directional dash.
