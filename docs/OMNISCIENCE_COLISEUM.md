@@ -1,8 +1,8 @@
 # The Omniscience Coliseum
 
-**Status:** approved arena direction; ten-area M1 graybox implemented and validated
+**Status:** approved arena direction; detailed static M1 prototype implemented and validated
 
-**Decision:** D-013, refined by D-014 and D-015
+**Decision:** D-013, refined by D-014, D-015, and D-016
 
 **Purpose:** monumental contained eight-player combat arena and monument to science, polymaths, and invention
 
@@ -10,7 +10,7 @@
 
 The Omniscience Coliseum combines a Greco-Roman circular arena with a surrounding science museum. The monumental combat floor distributes five-times-scale scientific landmarks throughout the interior as physical obstacles while preserving at least one verified clear movement lane and a contained perimeter.
 
-The M1 build is a primitive-part blockout, not finished art. Marble-gray architecture, brass accents, and limited cyan, blue, purple, red, and green category colors establish the silhouette without committing to production assets.
+The D-016 build is a detailed static prototype, not final production art. Studio-native parts, aged pale marble, dark stone, brass and bronze mechanisms, glass, and restrained cyan, blue, purple, red, and green energy accents establish believable museum construction without external assets.
 
 ## Layout
 
@@ -22,8 +22,9 @@ The M1 build is a primitive-part blockout, not finished art. Marble-gray archite
 - Elevated surrounding gallery behind a continuous collision barrier.
 - Eighteen-segment colonnade, open oculus, and north-facing arena title.
 - A 48-segment transparent fail-safe collision ring at radius 373.97 and height 160, inside the visible perimeter barrier.
-- Exhibit-name labels are hidden; formula visuals, original fighter-title plaques, and the arena title remain.
-- 472 anchored BaseParts total; all 282 visible exhibit BaseParts are collidable while invisible anchors are not.
+- Segmented marble floor panels, radial brass inlays, a compass mosaic, detailed gallery trim, upgraded column bases and capitals, spawn medallions, and a dark-stone title backing.
+- Exactly one angled dark-stone inscription at the center-facing base of every exhibit; formula visuals, original fighter-title plaques, and the arena title remain.
+- 1,949 anchored BaseParts total, including 445 architectural-detail parts, 984 exhibit visual-detail parts, and 24 simplified exhibit collision shells.
 
 The D-014 arena used a 240-stud combat disc and a 16.77-second tested route. D-015 increases its floor area tenfold, producing an estimated full clear-lane crossing time of about 53 seconds. A tested 100-stud segment along the required `Z=70` lane took 6.15 seconds at `WalkSpeed=16`.
 
@@ -44,11 +45,13 @@ The sector Models remain as Explorer organization and thematic ownership. Their 
 
 Scientist monuments use original fighter titles such as **Gravity Sovereign**, **Eureka Engineer**, and **Renaissance Mind**. They do not reproduce the modern-person names or likenesses shown in the visual reference.
 
-## M1 boundaries
+## Static-detail boundaries
 
-- All 24 exhibits are static, anchored, unlabeled graybox proxies at five-times scale.
+- All 24 exhibits remain static and anchored at five-times scale.
 - Exhibits do not damage, move, launch, teleport, stun, or otherwise affect players.
-- Visible exhibit geometry is collidable and acts as deliberate physical cover or obstacles; invisible UI anchors remain non-colliding.
+- Broad transparent collision shells preserve physical exhibit obstacles. Fine visual geometry, invisible UI anchors, and inscription stones are non-colliding and cannot snag players.
+- Each exhibit has a `VisualDetail` Folder, a `CollisionShells` Folder, and one `NamePlaque` Model with an uppercase SurfaceGui inscription.
+- The periodic-table exhibit displays all 118 element symbols in a static SurfaceGui.
 - Rotation, moving machinery, animated holograms, functional portals, lasers, hazards, breakage, and final art are deferred until core combat is stable.
 - No external models, meshes, packages, textures, or persistent arena scripts are included.
 
@@ -67,14 +70,21 @@ Scientist monuments use original fighter titles such as **Gravity Sovereign**, *
 
 - Exactly 24 uniquely named exhibit Models across eight organizational sectors.
 - All 24 exhibits are distributed inside the combat disc with zero exhibit/exhibit and exhibit/spawn overlaps.
+- Exactly 24 non-Billboard stone inscriptions with the approved exhibit names; each is readable at approximately 20–30 studs.
 - Zero exhibit-name BillboardGuis remain; six content BillboardGuis remain for formulas and fighter-title plaques.
 - Exactly eight enabled neutral SpawnLocations at approximately radius 329.
-- 472 anchored BaseParts and zero unanchored parts.
-- All 282 visible exhibit BaseParts are collidable; zero invisible exhibit anchors are collidable.
+- 1,949 anchored BaseParts and zero unanchored parts, below the 2,000-part ceiling.
+- Exactly 984 fine exhibit-detail parts are non-colliding, non-touching, and non-queryable.
+- Exactly 24 broad exhibit collision shells are collidable, non-touching, and queryable.
+- Exactly 118 element-symbol cells exist on the periodic-table display.
 - Exactly 48 continuous invisible containment segments.
-- Solo spawn occurred safely inside the combat boundary at radius 329.5 with no exhibit conflict.
+- Solo spawn occurred safely inside the combat boundary at radius 334.59.
 - Ray tests hit `CombatDisc`, `InnerBalustrade`, and the invisible `ArenaBoundary`.
 - A player-sized full-width blockcast confirmed the required `Z=70` interior lane is clear.
 - A 100-stud walk segment on that lane completed in 6.15 seconds.
-- Eight seconds of repeated outward walking and jumping reached a maximum radius of 368.55 and could not cross the 373.97-stud containment ring.
+- Eight representative exhibit-approach walks, one per sector, completed without collision snags.
+- Eight seconds of repeated outward walking and jumping reached a maximum radius of 368.52 and could not cross the 373.97-stud containment ring.
 - Solo Studio Output contained no project-script errors.
+- An iPhone 17 Pro landscape simulation rendered at a 750×361 Studio viewport without severe camera or composition loss; Studio was reset to its default viewport afterward.
+- A local server log recorded exactly two connected test players, and both PlayClient contexts launched without project-script errors.
+- Runtime Scene Analysis recorded 2,909 instances, 74,238 triangles, and 25 draw calls from the tested boundary view. Its 12 unparented instances belonged only to Roblox PlayerModule and character runtime code.

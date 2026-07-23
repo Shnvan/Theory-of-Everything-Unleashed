@@ -20,6 +20,7 @@ Only check a task after its acceptance condition has been tested.
 ## M1 — Movement and combat states
 
 - [x] Build and validate the ten-area graybox arena with eight safe spawns, 5× physical exhibits, a clear traversal lane, and tested perimeter containment.
+- [x] Complete and validate the Studio-native static realism pass with 24 engraved exhibit stones, simplified collision shells, mobile-landscape readability, and a sub-2,000-part budget.
 - [ ] Implement input mapping for keyboard/mouse and touch.
 - [ ] Implement the shared combat state machine.
 - [ ] Implement sprint and directional dash.
