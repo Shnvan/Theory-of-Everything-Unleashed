@@ -17,6 +17,7 @@ Read only the documents needed for the current task, but always read the four ma
 | [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md) | Client/server boundaries, modules, remotes, coding rules | Any implementation |
 | [STUDIO_IDE_WORKFLOW.md](STUDIO_IDE_WORKFLOW.md) | Studio, external IDE, Script Sync, Git, and testing setup | Initial setup or sync problems |
 | [ROADMAP_AND_TESTING.md](ROADMAP_AND_TESTING.md) | Milestones, acceptance tests, test matrix, validation gate | Planning and QA |
+| [ROBLOX_GAME_DEVELOPMENT_PLAYBOOK.md](ROBLOX_GAME_DEVELOPMENT_PLAYBOOK.md) | Development disciplines, evidence-gated production flow, agent process, and genre risks | Milestone planning, new systems, or cross-discipline work |
 | [MONETIZATION_ANALYTICS.md](MONETIZATION_ANALYTICS.md) | Revenue boundaries, budget, metrics, events | Product or business work |
 | [IP_CONTENT_SAFETY.md](IP_CONTENT_SAFETY.md) | Historical-person, asset, title, and violence guardrails | Character, art, audio, marketing |
 | [LLM_HANDOFF.md](LLM_HANDOFF.md) | Reusable session prompt and end-of-session handoff | Starting or ending an LLM session |
@@ -39,3 +40,7 @@ Read only the documents needed for the current task, but always read the four ma
 ### Product decision
 
 `PROJECT_BRIEF` → `MVP_SCOPE` → `DECISION_LOG` → `OPEN_QUESTIONS` → update `DECISION_LOG`
+
+### Milestone or system planning
+
+`AGENTS` → `PROJECT_BRIEF` → `MVP_SCOPE` → `ROBLOX_GAME_DEVELOPMENT_PLAYBOOK` → relevant domain document → `TASKS`

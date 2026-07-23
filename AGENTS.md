@@ -13,6 +13,8 @@ Before changing code or design:
 5. Read the task-specific document linked from `docs/INDEX.md`.
 6. Read `TASKS.md` and work only on the active milestone unless the user changes scope.
 
+For milestone planning, new systems, production decisions, or large cross-discipline features, also read `docs/ROBLOX_GAME_DEVELOPMENT_PLAYBOOK.md`. Tiny isolated fixes do not require it.
+
 ## Current milestone
 
 Build the universal combat foundation and a small **Gravity Sovereign** vertical slice. The game is not yet at public-alpha content production.
