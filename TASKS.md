@@ -6,7 +6,7 @@ Only check a task after its acceptance condition has been tested.
 
 ## M0 — Project setup
 
-- [ ] Create a private Roblox experience named `Theory of Everything: Unleashed — Prototype`.
+- [x] Create a private Roblox experience named `Theory of Everything: Unleashed — Prototype`.
 - [x] Create the Studio code folders described in `docs/STUDIO_IDE_WORKFLOW.md`.
 - [x] Sync the three code folders to `src/shared`, `src/server`, and `src/client`.
 - [x] Open this repository root in the external IDE.
