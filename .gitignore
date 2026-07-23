@@ -1,0 +1,16 @@
+# Local editor settings
+.vscode/
+.idea/
+
+# Local environment and credentials
+.env
+.env.*
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+
+# Studio-owned place files
+*.rbxl
+*.rbxlx
+

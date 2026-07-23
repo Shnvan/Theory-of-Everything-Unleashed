@@ -1,0 +1,69 @@
+# Task Board
+
+**Active milestone:** M0 — connect the IDE and Studio, then begin the combat foundation.
+
+Only check a task after its acceptance condition has been tested.
+
+## M0 — Project setup
+
+- [ ] Create a private Roblox experience named `Theory of Everything: Unleashed — Prototype`.
+- [ ] Create the Studio code folders described in `docs/STUDIO_IDE_WORKFLOW.md`.
+- [ ] Sync the three code folders to `src/shared`, `src/server`, and `src/client`.
+- [ ] Open this repository root in the external IDE.
+- [ ] Install a Luau language-server extension.
+- [ ] Initialize Git and make a documentation baseline commit.
+- [ ] Optional: connect a trusted AI client through Studio MCP.
+- [ ] Run one solo playtest and one server-with-two-clients playtest.
+
+**M0 exit condition:** editing a test ModuleScript in the IDE updates Studio, and a two-client Studio test starts without errors.
+
+## M1 — Movement and combat states
+
+- [ ] Build the graybox arena; traversal from one side to the other should take about ten seconds.
+- [ ] Implement input mapping for keyboard/mouse and touch.
+- [ ] Implement the shared combat state machine.
+- [ ] Implement sprint and directional dash.
+- [ ] Implement 100 health, death, five-second respawn, and brief spawn protection.
+- [ ] Add a training dummy with resettable health.
+
+**M1 exit condition:** a player can move, dash, damage the dummy through a server-approved test action, die, and respawn without stuck states.
+
+## M2 — Universal close combat
+
+- [ ] Implement the four-hit M1 chain.
+- [ ] Implement hit detection and server validation.
+- [ ] Implement frontal block.
+- [ ] Implement hitstun, knockback, and ragdoll.
+- [ ] Implement one limited ragdoll escape using the dash input.
+- [ ] Add clear hit, block, and invalid-action feedback.
+
+**M2 exit condition:** two local clients can attack, block, escape once, and complete repeated KO/respawn loops without desynchronizing.
+
+## M3 — Gravity Sovereign vertical slice
+
+- [ ] Implement the first approved gravity ability.
+- [ ] Add cooldown and Discovery Meter handling.
+- [ ] Add placeholder animation, VFX, sound, and mobile button feedback.
+- [ ] Add KO and assist credit.
+- [ ] Add a server leaderboard for the current session.
+- [ ] Add the short prototype Final Proof KO effect only if core combat already passes.
+
+**M3 exit condition:** three uninstructed testers can enter, fight, understand the main controls, and voluntarily re-engage after a KO.
+
+## M4 — Prototype gate
+
+- [ ] Run keyboard/mouse and mobile-emulation tests.
+- [ ] Run one-, two-, and eight-client tests.
+- [ ] Test duplicate requests, impossible range, cooldown spam, reset, disconnect, and death during an ability.
+- [ ] Record tester observations and metrics from `docs/ROADMAP_AND_TESTING.md`.
+- [ ] Decide: iterate combat, continue to the full Gravity Sovereign kit, or stop/pivot.
+
+## Parking lot
+
+- Full Gravity Sovereign normal kit
+- Character-specific `R` mechanic
+- Breakthrough transformation and awakened moveset
+- Breakable walls and throwable science props
+- Eureka Engineer and Renaissance Mind
+- Mastery and cosmetics
+- Public alpha, onboarding, saving, and store
