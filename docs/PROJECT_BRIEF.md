@@ -82,7 +82,7 @@ There are no formal rounds in the primary mode.
 
 ## Experience shape
 
-- One compact public arena.
+- One contained circular public arena with room for eight-player combat and distributed landmarks.
 - Target maximum of eight players.
 - Continuous combat and quick respawn.
 - Practice dummy support for early and low-population testing.

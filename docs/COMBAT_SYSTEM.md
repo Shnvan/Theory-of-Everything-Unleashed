@@ -37,7 +37,7 @@ Mobile is not a later port. Every combat action must have a clear touch equivale
 | Ragdoll-escape cooldown | 20 seconds | DEFAULT |
 | Discovery Meter maximum | 100 | DEFAULT |
 | Assist lookback window | 10 seconds | DEFAULT |
-| Arena crossing time | About 10 seconds | DEFAULT |
+| Arena crossing time | About 17 seconds | DEFAULT, revised by D-014 |
 
 All numeric values belong in configuration modules.
 

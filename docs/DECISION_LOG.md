@@ -19,6 +19,7 @@ This file records product direction. Newer explicit user decisions supersede old
 | D-011 | 2026-07-23 | LOCKED | Server authority covers damage, cooldowns, KOs, assists, meter, and respawn. | Competitive PvP cannot trust client-declared results. |
 | D-012 | 2026-07-23 | LOCKED | Monetization is cosmetic-only and begins after combat validation. | Revenue systems cannot rescue an unfun loop; combat power sales damage fairness. |
 | D-013 | 2026-07-23 | LOCKED | The first arena is internally named **The Omniscience Coliseum**, a compact Greco-Roman monument to science and invention. Its M1 version uses static graybox proxies for 24 exhibits and original fighter-title monuments. | Establishes a distinct science-fantasy identity while preserving a readable combat disc and avoiding modern-person likeness or endorsement risk. |
+| D-014 | 2026-07-23 | LOCKED | Expand The Omniscience Coliseum to a 240-stud combat disc on a 420×420 foundation, distribute the 24 static exhibits across the interior, and hide exhibit-name labels. Keep exhibits non-colliding and preserve clear traversal lanes. | Direct scale review found the former 137-stud playable area too small. The larger layout creates the intended monumental scale while retaining one contained eight-player arena. This refines the size and exhibit-placement aspects of D-003 and D-013. |
 
 ## Prototype defaults
 
@@ -29,9 +30,10 @@ These are starting values, not promises.
 | P-001 | DEFAULT | 100 maximum health |
 | P-002 | DEFAULT | Five-second respawn |
 | P-003 | DEFAULT | Two seconds of spawn protection, canceled by attacking |
-| P-004 | DEFAULT | Arena crossing time of about ten seconds |
+| P-004 | SUPERSEDED | Arena crossing time of about ten seconds; replaced after the approved scale revision |
 | P-005 | DEFAULT | Responsive basic attacks with heavier cinematic abilities |
 | P-006 | DEFAULT | Third-person camera and hybrid directional targeting |
+| P-007 | DEFAULT | Expanded arena clear-lane crossing time of about seventeen seconds |
 
 Change defaults through documented playtest evidence without treating the change as a project pivot.
 

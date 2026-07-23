@@ -1,27 +1,33 @@
 # The Omniscience Coliseum
 
-**Status:** approved arena direction; M1 graybox implemented  
-**Decision:** D-013  
-**Purpose:** compact eight-player combat arena and monument to science, polymaths, and invention
+**Status:** approved arena direction; expanded M1 graybox implemented and validated
+
+**Decision:** D-013, refined by D-014
+
+**Purpose:** expanded eight-player combat arena and monument to science, polymaths, and invention
 
 ## Direction
 
-The Omniscience Coliseum combines a Greco-Roman circular arena with a surrounding science museum. The playable center remains open and readable, while an elevated gallery presents monumental scientific instruments and invention displays.
+The Omniscience Coliseum combines a Greco-Roman circular arena with a surrounding science museum. The enlarged combat floor distributes scientific landmarks throughout the interior while keeping every exhibit non-colliding and maintaining clear movement lanes.
 
 The M1 build is a primitive-part blockout, not finished art. Marble-gray architecture, brass accents, and limited cyan, blue, purple, red, and green category colors establish the silhouette without committing to production assets.
 
 ## Layout
 
-- Circular combat disc with an effective playable diameter of about 137 studs.
-- Eight spawn pads at the perimeter of the combat space, facing the center.
+- A 420×420-stud foundation with a 240-stud-diameter circular combat disc.
+- Eight spawn pads at radius 104, facing the center.
 - Low central pedestal with a static mechanical orrery proxy.
-- Elevated, non-playable exhibit gallery behind a continuous collision barrier.
+- All 24 exhibit proxies distributed across the central, middle, and outer interior rings.
+- Elevated surrounding gallery behind a continuous collision barrier.
 - Eighteen-segment colonnade, open oculus, and north-facing arena title.
+- Exhibit-name labels are hidden; formula visuals, original fighter-title plaques, and the arena title remain.
 - 424 anchored BaseParts total; decorative exhibit parts are non-collidable.
 
-The original 160-stud estimate was tuned after an in-engine movement test measured sustained default character movement below the theoretical `WalkSpeed` value. The accepted route from `X=-64` to `X=64` took 9.85 seconds at `WalkSpeed=16`.
+The original 137-stud playable area passed its ten-second target but felt too small during direct scale review. The approved revision expands the combat disc to 240 studs. An unobstructed 216-stud lane from `X=-108` to `X=108` at `Z=18` took 16.77 seconds at `WalkSpeed=16`.
 
-## Exhibit sectors
+## Exhibit organization
+
+The sector Models remain as Explorer organization and thematic ownership. Their children are deliberately mixed across the playable interior rather than placed only in the corresponding outer gallery.
 
 | Sector | Static M1 proxies |
 |---|---|
@@ -38,8 +44,9 @@ Scientist monuments use original fighter titles such as **Gravity Sovereign**, *
 
 ## M1 boundaries
 
-- All 24 exhibits are static, anchored, labeled graybox proxies.
+- All 24 exhibits are static, anchored, unlabeled graybox proxies.
 - Exhibits do not damage, move, launch, teleport, stun, or otherwise affect players.
+- Decorative exhibit parts remain non-colliding so the scattered layout cannot create accidental combat traps.
 - Rotation, moving machinery, animated holograms, functional portals, lasers, hazards, breakage, and final art are deferred until core combat is stable.
 - No external models, meshes, packages, textures, or persistent arena scripts are included.
 
@@ -56,11 +63,13 @@ Scientist monuments use original fighter titles such as **Gravity Sovereign**, *
 
 ## Acceptance evidence
 
-- Exactly 24 uniquely named exhibit Models across eight sectors.
-- Exactly eight enabled neutral SpawnLocations.
+- Exactly 24 uniquely named exhibit Models across eight organizational sectors.
+- All 24 exhibits are distributed inside the combat disc with zero bounding-box overlaps.
+- Zero exhibit-name BillboardGuis remain; six content BillboardGuis remain for formulas and fighter-title plaques.
+- Exactly eight enabled neutral SpawnLocations at radius 104.
 - 424 anchored BaseParts; zero unanchored parts and zero collidable decorative exhibit parts.
-- Solo spawn occurred inside the combat boundary.
-- Downward and outward ray tests hit the combat floor and perimeter barrier.
-- Default-speed traversal completed in 9.85 seconds.
+- Solo spawn occurred safely inside the combat boundary at radius 103.6.
+- Downward and outward ray tests hit `CombatDisc` and `InnerBalustrade`.
+- The clear 216-stud lane completed in 16.77 seconds at default speed.
 - Solo Studio Output contained no project-script errors.
-- A local server accepted two clients and recorded two connected players.
+- A local server accepted exactly two clients and recorded two connected players after the revision.

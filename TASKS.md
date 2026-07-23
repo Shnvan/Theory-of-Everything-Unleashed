@@ -19,7 +19,7 @@ Only check a task after its acceptance condition has been tested.
 
 ## M1 — Movement and combat states
 
-- [x] Build the graybox arena; traversal from one side to the other should take about ten seconds.
+- [x] Build and validate the expanded graybox arena with eight safe spawns, scattered non-colliding exhibits, and clear traversal lanes.
 - [ ] Implement input mapping for keyboard/mouse and touch.
 - [ ] Implement the shared combat state machine.
 - [ ] Implement sprint and directional dash.
