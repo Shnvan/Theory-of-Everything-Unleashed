@@ -72,6 +72,8 @@ The development title remains usable internally while this review is pending.
 
 Every external or generated asset needs a record.
 
+Store operational records in the [Asset Provenance Ledger](ASSET_PROVENANCE_LEDGER.md). Do not approve an asset from this field template alone.
+
 | Field | Record |
 |---|---|
 | Asset name and internal ID | Exact identifier |
@@ -87,6 +89,8 @@ Every external or generated asset needs a record.
 | Reviewer and status | Approved/hold/replace |
 
 Do not rely on a Creator Store listing title as proof that the uploader owned the asset.
+
+Every non-zero asset, plugin, extension, subscription, commission, or tool cost also requires separate advance user approval. State the exact price and currency, recurring terms, rights, purpose, risks, and best free alternative before spending.
 
 ## Combat and Final Proof
 

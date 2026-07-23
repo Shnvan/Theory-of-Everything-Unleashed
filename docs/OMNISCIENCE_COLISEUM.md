@@ -2,7 +2,7 @@
 
 **Status:** approved arena direction; detailed static M1 prototype implemented and validated
 
-**Decision:** D-013, refined by D-014, D-015, and D-016
+**Decision:** D-013, refined by D-014, D-015, and D-016; D-017 governs deferred post-M4 production exhibits
 
 **Purpose:** monumental contained eight-player combat arena and monument to science, polymaths, and invention
 
@@ -11,6 +11,8 @@
 The Omniscience Coliseum combines a Greco-Roman circular arena with a surrounding science museum. The monumental combat floor distributes five-times-scale scientific landmarks throughout the interior as physical obstacles while preserving at least one verified clear movement lane and a contained perimeter.
 
 The D-016 build is a detailed static prototype, not final production art. Studio-native parts, aged pale marble, dark stone, brass and bronze mechanisms, glass, and restrained cyan, blue, purple, red, and green energy accents establish believable museum construction without external assets.
+
+D-017 does not alter that accepted prototype. If the project passes M4, the future production pass will replace invented exhibit visuals with named historical replicas or authoritative scientific reconstructions while preserving the arena's scale, internal Model identities, footprints, collision shells, spawns, containment, and clear lane. See [Omniscience Coliseum Exhibit Accuracy](OMNISCIENCE_COLISEUM_EXHIBIT_ACCURACY.md).
 
 ## Layout
 
@@ -44,6 +46,8 @@ The sector Models remain as Explorer organization and thematic ownership. Their 
 | Northwest — Hall of Minds | Scientist statues, floating equations, invention museum cases |
 
 Scientist monuments use original fighter titles such as **Gravity Sovereign**, **Eureka Engineer**, and **Renaissance Mind**. They do not reproduce the modern-person names or likenesses shown in the visual reference.
+
+In the deferred D-017 pass, those fighter-title monuments remain separate. The `Scientist Statues` exhibit is planned to receive historically grounded portrayals with real-name stones and factual cards after its likeness references and rights pass review.
 
 ## Static-detail boundaries
 

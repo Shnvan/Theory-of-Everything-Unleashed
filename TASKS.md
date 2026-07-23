@@ -59,6 +59,23 @@ Only check a task after its acceptance condition has been tested.
 - [ ] Record tester observations and metrics from `docs/ROADMAP_AND_TESTING.md`.
 - [ ] Decide: iterate combat, continue to the full Gravity Sovereign kit, or stop/pivot.
 
+## Post-M4 — Museum-Accurate Coliseum Production
+
+**Deferred:** do not begin this section unless M4 passes and the continuation decision authorizes production art.
+
+- [ ] Complete and approve research dossiers for all 24 exhibits using the real names and accuracy classes in `docs/OMNISCIENCE_COLISEUM_EXHIBIT_ACCURACY.md`.
+- [ ] Resolve Q-014 and record target-device geometry, texture, draw, memory, streaming, and frame-time budgets.
+- [ ] Approve provenance for every external reference and asset; obtain separate advance approval for every non-zero cost.
+- [ ] Establish the Git LFS `art/` source tree, naming rules, export presets, reimport workflow, and rollback procedure.
+- [ ] Build and validate the Della Volpaia armillary-sphere, Boulton and Watt beam-engine, and NASA-grounded black-hole pilots.
+- [ ] Produce the remaining exhibits one sector at a time without changing internal Model identities, footprints, or collision shells.
+- [ ] Add exactly 24 real-name stones and 24 factual museum cards with verified text, scale disclosures, and source identifiers.
+- [ ] Confirm imported assets contain no scripts, remotes, packages, hidden executable content, or undocumented dependencies.
+- [ ] Re-run arena collision, spawn, containment, `Z=70` lane, desktop, mobile, solo, two-client, and eight-client acceptance.
+- [ ] Complete the provenance, factual-accuracy, Scene Analysis, and target-device performance reviews before replacing the final prototype visual.
+
+**Post-M4 Coliseum exit condition:** all 24 exhibits have approved evidence and rights, real-name stones and factual cards are correct, arena gameplay constraints still pass, and the target device meets its recorded performance budgets.
+
 ## Parking lot
 
 - Full Gravity Sovereign normal kit
