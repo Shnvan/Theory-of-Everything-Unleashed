@@ -8,7 +8,16 @@
 # docs/STUDIO_IDE_WORKFLOW.md for how it fits the Studio workflow.
 
 [tools]
+# Studio sync and place generation from default.project.json.
 rojo = "rojo-rbx/rojo@7.7.0"
+# Package manager. See wally.toml for why nothing is installed yet.
 wally = "UpliftGames/wally@0.3.2"
+# Formatter. Config in stylua.toml.
 stylua = "JohnnyMorganz/StyLua@2.5.2"
+# Linter. Config in selene.toml. Catches deprecated APIs and `_G` usage.
 selene = "Kampfkarren/selene@0.31.0"
+# Type checker, the same engine as the VS Code extension. Run headless with:
+#   rojo sourcemap default.project.json --output sourcemap.json
+#   luau-lsp analyze --definitions=globalTypes.d.luau --sourcemap=sourcemap.json src
+# globalTypes.d.luau is fetched, not committed; see .gitignore.
+luau-lsp = "JohnnyMorganz/luau-lsp@1.69.0"

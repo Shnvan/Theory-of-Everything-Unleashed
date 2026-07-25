@@ -38,6 +38,21 @@ jobs:
       - name: Lint
         run: selene src
 
+      - name: Fetch Roblox type definitions
+        run: >-
+          curl -fsSL -o globalTypes.d.luau
+          https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/main/scripts/globalTypes.d.luau
+
+      - name: Generate sourcemap
+        run: rojo sourcemap default.project.json --output sourcemap.json
+
+      - name: Type check
+        # .luaurc sets strict mode, so this enforces the --!strict requirement in
+        # docs/TECHNICAL_ARCHITECTURE.md rather than trusting the file header.
+        run: >-
+          luau-lsp analyze --definitions=globalTypes.d.luau --sourcemap=sourcemap.json
+          --ignore="**/Packages/**" src
+
       - name: Build place from project file
         # Proves default.project.json resolves and every source file parses.
         # This output is NOT the game place -- it contains only the three code

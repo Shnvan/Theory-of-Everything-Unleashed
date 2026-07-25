@@ -25,6 +25,7 @@ DevPackages/
 ServerPackages/
 sourcemap.json
 roblox.yml
+globalTypes.d.luau
 build/
 
 # Model exports; art source will live under art/ with Git LFS after M4
