@@ -24,8 +24,15 @@ import bpy
 
 # --- parameters ---------------------------------------------------------------
 
-# Authored in studs; scaled on export. Roblox reads 1 Blender metre as 100 studs.
-STUDS_TO_BLENDER = 0.01
+# One Blender unit imports as one stud, so no conversion is applied.
+#
+# Verified by import on 2026-07-26, not assumed. An earlier version of this file
+# scaled by 0.01 on the documented belief that Roblox reads a Blender metre as
+# 100 studs. It does not: with the importer's `Scale Unit` set to `Stud`, one
+# file unit is one stud, so that conversion made the mesh 100x too small and had
+# to be undone by hand with a Scale Factor of 100. Authoring 1:1 means every
+# exhibit imports correctly at Scale Factor 1 with nothing to remember.
+STUDS_TO_BLENDER = 1.0
 
 # Sized to sit inside the existing exhibit footprint, whose collision shell
 # measures 43.20 x 54.00 x 33.92 studs. Verify after import; do not assume.
@@ -179,6 +186,10 @@ def build() -> None:
 
     merged = bpy.context.active_object
     merged.name = "GiantArmillarySphere"
+    # The importer names the MeshPart from the MESH DATA, not the object, so
+    # this must be set too. Without it the part arrives called "Torus", after
+    # whichever primitive happened to be active during the join.
+    merged.data.name = "GiantArmillarySphere"
 
     # Recentre on the origin so the importer places it predictably.
     bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="BOUNDS")

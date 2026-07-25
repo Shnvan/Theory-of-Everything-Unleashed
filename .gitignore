@@ -40,8 +40,9 @@ tools/blender/
 
 # Exhibit art. The committed source is art/exhibits/*/generate.py -- a script,
 # not a binary -- so exported meshes are build output and stay out of git. This
-# is only safe because the generators are deterministic: byte-identical output
-# across runs, which is checked. See art/README.md.
+# is safe because generators are GEOMETRICALLY deterministic: identical triangle
+# count, vertex count, and dimensions on every run. Byte-identity is NOT
+# guaranteed and is not needed. See art/README.md.
 #
 # Hand-sculpted exhibits that cannot be generated will need committed .blend
 # files under Git LFS. None exist yet.

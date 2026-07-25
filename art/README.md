@@ -13,6 +13,16 @@ That buys four things a binary file cannot:
 - **Parameterised** — change a ring count or an angle by editing a number
 - **No Git LFS** — the repository stays text
 
+### What "deterministic" means here, precisely
+
+**Geometrically deterministic: yes.** Every run produces the same triangle count, vertex count, and dimensions. That is what each generator prints, and it is what makes gitignoring the mesh safe — anyone regenerating gets the same object.
+
+**Byte-identical: no, and not chased.** `bpy.ops.object.join()` merges in an order that is not stable across runs, so the exported file differs byte-for-byte while the geometry does not. Sorting mesh elements would not reliably fix it either: these models are highly symmetric, so a distance sort leaves large numbers of ties.
+
+That is an acceptable trade because nothing depends on byte-identity — no mesh is committed, so there is no stored artifact to compare a rebuild against. **Verify the printed geometry figures, not a file hash.**
+
+An earlier version of this document claimed byte-identical output. That was measured and true for the `GLTF_SEPARATE` format, then silently invalidated when the pipeline switched to GLB without re-testing.
+
 `.blend` files and exported meshes are build artifacts and are gitignored. Only hand-sculpted exhibits — statues, ornate facades — need a committed binary, and those get LFS.
 
 ## Running a generator
@@ -26,11 +36,30 @@ That buys four things a binary file cannot:
 
 `--factory-startup` matters: it ignores local Blender preferences so the output does not depend on whose machine ran it.
 
-## Units
+## Units — one Blender unit is one stud
 
-Roblox's importer treats **1 Blender metre as 100 studs**. Generators therefore author in studs for readability and scale by `0.01` on export, via `STUDS_TO_BLENDER` in each script.
+Author geometry 1:1 in studs. Apply no conversion. With the importer's **Scale Unit** set to **Stud** and **Scale Factor** at **1**, one file unit arrives as one stud.
 
-**This is verified empirically per exhibit, not trusted.** Import, measure the resulting `MeshPart.Size` in Studio, and compare against the intended stud dimensions. Get this wrong and an exhibit is out by 100×.
+**Verified by import, 2026-07-26.** A generator authored at 45.62 × 52.49 × 45.62 units produced a `MeshPart` measuring exactly `45.62, 52.494, 45.62`.
+
+> This document previously stated the opposite — that Roblox reads a Blender metre as 100 studs, so generators should scale by `0.01`. **That was wrong.** It made the first pilot import 100× too small, needing a manual Scale Factor of 100 to undo. The rule above replaces it, and it is measured rather than sourced.
+
+Still check it per exhibit. Read the imported `MeshPart.Size` and compare against the dimensions the generator printed. It costs one glance and catches the error class that would otherwise reach twenty-four exhibits.
+
+## Import settings
+
+| Setting | Value |
+|---|---|
+| Scale Unit | **Stud** |
+| Scale Factor | **1** |
+| Anchored | **On** — every exhibit part is anchored (D-016) |
+| Rig Type | No Rig |
+| Merge Meshes | Off |
+| Collision Fidelity | Box — real collision comes from the exhibit's existing `CollisionShells` |
+
+The importer names the `MeshPart` after the **mesh data block**, not the object, so generators set both. Otherwise the part arrives named after whichever primitive was active during the join.
+
+glTF also wraps output in a `Scene` node, so an import lands as `Scene → <Object> → <MeshPart>`. Take the `MeshPart` and discard the wrappers when placing it.
 
 ## Budget
 

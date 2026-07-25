@@ -21,7 +21,11 @@ The plan assumed Blender MCP would be the tool. It is not, and should not be.
 
 **Blender runs headless from the CLI**, driven by exactly the committed Python scripts the plan already recommended as the source of truth. That needs no MCP at all, works today, and is reproducible on any machine. MCP is registered for interactive shaping, but it is not in the pipeline — which matters because the honest 2026 read of Blender MCP is that it is strong at repetitive setup and **weak at creative modelling and topology**, and topology is the hard part of a museum object.
 
-**Determinism was verified, not asserted:** two runs produced byte-identical GLB output, SHA256 `60E9D485…`. That is the claim the whole "scripts not binaries" decision rests on, so it is checked rather than trusted, and it is what makes gitignoring the mesh safe.
+**Determinism was tested rather than asserted — and the test corrected the claim.** Generators are *geometrically* deterministic: three runs each gave 8,884 triangles, 4,450 vertices, and identical dimensions. They are **not byte-deterministic**; `join()` orders elements unstably, so the GLB differs byte-for-byte between runs while the geometry does not.
+
+An earlier byte-identical result was real, but measured under `GLTF_SEPARATE` and invalidated when the pipeline switched to GLB without re-testing. That claim reached a commit message, a decision record, and two documents before the recheck caught it — a reminder that a verified fact stops being verified the moment the thing under it changes.
+
+Byte-identity is deliberately not pursued: these models are highly symmetric so element sorting leaves large numbers of ties, and nothing depends on it, because no mesh is committed. Geometric stability is what makes gitignoring the mesh safe, and it holds.
 
 ### Verification
 
@@ -30,7 +34,7 @@ The plan assumed Blender MCP would be the tool. It is not, and should not be.
 - Determinism: **PASS**, identical SHA256 across two runs.
 - Arena baseline re-measured: **1,949 BaseParts, 2,455 Workspace instances**, 0 MeshParts, 0 Unions. Shape mix: 1,140 Block, 639 Ball, 146 Cylinder, 24 Wedge.
 - **Docs were stale.** The recorded instance count was 2,909; the measured figure is 2,455. Re-measuring rather than trusting the doc was the right call and is now written into Q-014's resolution.
-- Studio import: **NOT RUN.** The 3D Importer is Studio UI with no MCP equivalent, so this needs the user.
+- Studio import: **RUN and PASSED.** `MeshPart.Size` measured **45.62, 52.494, 45.62** — exact match for the generator's output, and the sphere reads correctly in-world. Two source-level bugs found and fixed by that single import: the 0.01 scale conversion was backwards (arrived 100× small, needed a manual Scale Factor of 100), and the part imported named `Torus` because the importer names from mesh data rather than the object. Both fixed in the generator, so the remaining 23 exhibits need neither workaround.
 - Triangle and draw-call counts: **NOT RE-MEASURED.** Not readable from Luau; they come from Studio's Scene Analysis panel, which is UI-only. The 74,238 / 25 figures are inherited from the docs and remain unverified by me.
 
 ### Decisions

@@ -59,4 +59,13 @@ blender --background --factory-startup \
   -- --out art/exhibits/GiantArmillarySphere/build/GiantArmillarySphere.glb
 ```
 
-Deterministic: two runs produced byte-identical output (SHA256 `60E9D485…`). If that stops being true, the script has stopped being the source of truth.
+**Geometrically deterministic:** three runs each produced 8,884 triangles, 4,450 vertices, and 45.62 × 52.49 × 45.62 studs. Check those printed figures, not a file hash — the GLB is not byte-identical between runs because `join()` ordering is unstable, and nothing depends on it being so. See [art/README.md](../../README.md).
+
+## Import result — verified 2026-07-26
+
+Imported through Studio's 3D Importer. `MeshPart.Size` measured **45.62, 52.494, 45.62** — an exact match for the generator's stated output.
+
+Two corrections came out of that first import, both now fixed at the source:
+
+- **Scale.** The generator had scaled by 0.01 on the documented belief that Roblox reads a Blender metre as 100 studs. It does not — with `Scale Unit: Stud`, one file unit is one stud. The pilot arrived 100× too small and needed a manual Scale Factor of 100. The generator now authors 1:1 and imports correctly at Scale Factor 1.
+- **Naming.** The `MeshPart` arrived called `Torus`, because the importer names from the mesh *data* block rather than the object. The generator now sets both.
