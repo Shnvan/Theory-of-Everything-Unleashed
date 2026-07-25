@@ -16,7 +16,7 @@ Use **Roblox Studio and an external IDE together**.
 | VS Code, Cursor, or another IDE | Luau source files, Markdown plans, Git history, code review, and LLM-assisted coding |
 | Rojo | Syncs the three Studio script folders with `src/shared`, `src/server`, and `src/client` |
 | StyLua, Selene, luau-lsp | Format, lint, and type check — enforced in CI |
-| Studio MCP, optional | Lets a trusted compatible AI client inspect and operate the open Studio place |
+| Studio MCP | Lets Claude Code read the open Studio place's data model and Output. Registered in `.mcp.json`; scripts stay read-only over MCP (D-024) |
 
 Run `rokit install` from the repository root to get every tool at its pinned version, then copy `.vscode/settings.json.example` to `.vscode/settings.json`.
 

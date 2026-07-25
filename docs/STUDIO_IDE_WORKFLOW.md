@@ -145,18 +145,80 @@ Use for:
 - Text size and cooldown readability.
 - Lower-end device simulation and performance.
 
-## Optional Studio MCP
+## Studio MCP
 
-Roblox Studio includes an MCP server that compatible AI clients can connect to. It can inspect the open data model, read or edit scripts, run Luau, and start tests.
+Roblox Studio can act as an MCP server, letting a compatible AI client inspect the open data model, read Output, run Luau, and start tests. Connected and configured on 2026-07-25 (D-024).
 
-Use it only when:
+### How the pieces fit
+
+Studio does **not** connect out to anything. Enabling **Assistant Settings → MCP Servers → Enable Studio as MCP server** only starts the listener inside Studio — the panel will keep saying **"No clients connected"** until a client launches the `StudioMCP.exe` proxy, which then connects back to Studio. The client spawns the proxy, not Studio.
+
+For Claude Desktop, Cursor, and Codex, Studio can write that client's config itself via its toggles. **Claude Code CLI is different** — its row shows a command you must run yourself. Turning on the other toggles does nothing for Claude Code.
+
+### Registration
+
+Committed at the repository root in `.mcp.json`, so the setup is reproducible:
+
+```json
+{
+  "mcpServers": {
+    "Roblox_Studio": {
+      "type": "stdio",
+      "command": "cmd.exe",
+      "args": ["/c", "%LOCALAPPDATA%\\Roblox\\mcp.bat"],
+      "env": {}
+    }
+  }
+}
+```
+
+`%LOCALAPPDATA%` is expanded by `cmd.exe`, which keeps the file portable across machines and user names.
+
+Two things to expect:
+
+1. **MCP servers load when a session starts.** Registering the server does nothing for a session already running. Start a new Claude Code session.
+2. **A project-scoped server needs explicit approval on first use.** `claude mcp get Roblox_Studio` will report `Pending approval` until you accept the prompt. That gate exists because `.mcp.json` is checked into git and could otherwise let a repository launch a process on your machine.
+
+Do not use `claude mcp add` from Git Bash. MSYS path translation rewrites the `/c` flag to `C:/`, which produces a registration that silently cannot start. Edit `.mcp.json` directly, or run the command from PowerShell.
+
+### Known bug in Roblox's launcher
+
+`%LOCALAPPDATA%\Roblox\mcp.bat` has a batch-syntax error. Its `else` sits on its own line, which is invalid — `else` must follow the closing parenthesis on the same line. Running it produces:
+
+```text
+'else' is not recognized as an internal or external command,
+'"%B/..\StudioMCP.exe"' is not recognized as an internal or external command,
+```
+
+Consequence: the `if exist` branch works, so the proxy launches correctly while the version path the file names still exists. The registry-lookup **fallback is dead**. Studio normally rewrites `mcp.bat` when it updates, so this should self-heal — but if MCP stops working right after a Studio update, this is the first thing to check. Re-copy the command from Studio's Quick connect panel and reconcile `.mcp.json` with it.
+
+### Use it only when
 
 - The client is trusted.
 - The active Studio instance is the intended private prototype.
-- Git or a stable Studio checkpoint exists.
+- **The place has been published**, not merely saved. `*.rbxl` is gitignored, so the cloud version is the only backup of the arena that exists, and MCP can modify and delete instances.
 - The requested AI action is narrow and reviewable.
 
-In Studio, open **Assistant Settings → MCP Servers → Quick connect**, then enable the installed supported client. If no MCP connection is present, an LLM sees only local files; give it the relevant Explorer tree and Output errors rather than letting it invent Studio Instances.
+### Scripts are read-only over MCP
+
+Rojo syncs disk to Studio. MCP can edit scripts inside Studio. Those are two writers to the same scripts, and **Rojo wins silently** — an MCP script edit is overwritten on the next sync with no conflict prompt and no error.
+
+| MCP may | MCP may not |
+|---|---|
+| Read the data model, instance names, classes, properties | Create or edit `.luau` scripts |
+| Read Output and Script Analysis | |
+| Create and edit non-script instances: GUI, parts, attributes | |
+| Run Luau for inspection, and start tests | |
+
+Luau authoring stays on disk, under git, synced by Rojo. Recorded as D-024.
+
+### What MCP does and does not remove
+
+It removes the need to *guess* what is in the place — which is worth a lot here, since this project already shipped a bug caused by asserting ten GUI instance names that were written down nowhere (see [HUD_AND_UI_SPEC.md](HUD_AND_UI_SPEC.md)).
+
+It does **not** remove any test. Feel, thumb reach, readability, and whether combat is fun are not inspectable. The two-client test and the mobile device test are unchanged.
+
+If MCP is not connected, an agent sees only local files. Give it the relevant Explorer tree, property values, and Output errors rather than letting it invent Studio instances.
 
 ## Why Rojo, and what did not change
 

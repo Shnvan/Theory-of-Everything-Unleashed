@@ -66,7 +66,11 @@ Practical consequences:
 
 - **Write pure logic first, in `src/shared`, and unit test it.** This is the largest available lever on this project. Frame data, transition legality, cooldown math, assist attribution, and block-arc geometry are all pure functions. Today each of them costs a manual two-client playtest to check, which makes iteration expensive forever. Moving that verification into tests is what makes agent work compound.
 - **Give the agent Explorer trees and property values** when Studio MCP is not connected. Otherwise it will invent instance names — and the project already has one bug of exactly that shape (S3 in [PROJECT_AUDIT_2026-07-25.md](PROJECT_AUDIT_2026-07-25.md)).
-- **Studio MCP** narrows this gap and widens the blast radius. Only with a trusted client, the correct private place open, a Git or Studio checkpoint in place, and a narrow reviewable action.
+- **Studio MCP** narrows the left column and widens the blast radius. It is connected here (D-024), with three things worth knowing:
+  - **Servers load at session start.** Registering or changing an MCP server does nothing for a session already running, and an agent cannot gain the capability mid-conversation. If it claims to, it is wrong.
+  - **Scripts are read-only over MCP.** Rojo overwrites Studio-side script edits silently. Reads and non-script instances only; see [STUDIO_IDE_WORKFLOW.md](STUDIO_IDE_WORKFLOW.md).
+  - **It removes guessing, not testing.** The right column above is unchanged. Feel, thumb reach, and whether combat is fun are not inspectable, and an agent with MCP still cannot tell you a two-client test passed.
+- **Do not add MCP servers speculatively.** Each one is a process with real access, launched on your machine. D-025 records Blender, GitHub, design-tool, and filesystem MCP servers as OUT, with the reasoning and a revisit trigger. "It might be useful later" is the same failure this project already has a named risk for.
 
 ---
 

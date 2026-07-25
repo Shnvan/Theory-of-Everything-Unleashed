@@ -109,6 +109,8 @@ The most common source of real bugs in a combat game. Treat these as mandatory.
 - `*.rbxl` is gitignored, so **the Studio place has no repo-side backup.** Publish privately at every checkpoint with a version note. This is the only recovery path that exists.
 - `rojo build` output is a syntax check, not the game. **Never publish it over the real place** — it contains none of the arena.
 - Anything code depends on by name inside Studio needs a written contract in the repository. See [HUD_AND_UI_SPEC.md](HUD_AND_UI_SPEC.md) for the pattern and for why.
+- **Never edit a script through Studio MCP.** Rojo syncs disk to Studio, so an MCP script edit is overwritten on the next sync with no conflict prompt and no error — the work is simply gone. MCP reads the data model, Output, and properties, and may create or edit non-script instances; Luau authoring stays on disk (D-024).
+- Publish the place before any MCP write of any kind. MCP can delete instances, and the cloud version is the only backup.
 
 ---
 

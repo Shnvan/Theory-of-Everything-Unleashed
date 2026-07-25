@@ -12,7 +12,7 @@ Only check a task after its acceptance condition has been tested. Implementation
 - [x] Open this repository root in the external IDE.
 - [x] Install a Luau language-server extension.
 - [x] Initialize Git and make a documentation baseline commit.
-- [x] Optional: connect a trusted AI client through Studio MCP.
+- [x] Optional: connect a trusted AI client through Studio MCP. *Studio-side server enabled. Claude Code CLI was registered separately on 2026-07-25 (D-024); it needs its own `.mcp.json` entry, which the Studio toggles do not provide.*
 - [x] Run one solo playtest and one server-with-two-clients playtest.
 
 **M0 exit condition:** editing a test ModuleScript in the IDE updates Studio, and a two-client Studio test starts without errors.
@@ -27,8 +27,12 @@ Added 2026-07-25 after the audit in [docs/PROJECT_AUDIT_2026-07-25.md](docs/PROJ
 - [x] Move the combat type vocabulary and every tunable into `src/shared` (`CombatTypes`, `CombatConfig`, `InputConfig`).
 - [x] Fix the five `InputController` defects found by the audit: duplicated bind names, missing sequence number, blocking startup, permanently latched touch actions, and the ungated global left-click sink.
 - [x] Write the design, engineering, HUD, tooling, AI-workflow, and skills doctrine documents, and record D-018 through D-023.
-- [ ] **NEEDS STUDIO.** Connect the Rojo plugin to the private prototype and confirm the three folders land where Script Sync put them, with no double nesting and no loss of Studio-side instances. Publish a checkpoint first.
-- [ ] **NEEDS STUDIO.** Verify the live `GameHUD` tree against [docs/HUD_AND_UI_SPEC.md](docs/HUD_AND_UI_SPEC.md) and correct whichever side is wrong.
+- [x] Register Roblox Studio MCP for Claude Code in a committed `.mcp.json`, with scripts read-only (D-024), and record Blender and the other MCP candidates as OUT (D-025).
+- [ ] Approve the project-scoped MCP server in a new Claude Code session and confirm Studio's panel stops reporting "No clients connected".
+- [ ] **MCP-VERIFIABLE.** Confirm `ReplicatedStorage/GameShared`, `ServerScriptService/GameServer`, and `StarterPlayer/StarterPlayerScripts/GameClient` exist at the paths `default.project.json` targets — before connecting Rojo, which is the step with real risk to the place.
+- [ ] **MCP-VERIFIABLE.** Verify the live `GameHUD` tree against [docs/HUD_AND_UI_SPEC.md](docs/HUD_AND_UI_SPEC.md) and correct whichever side is wrong. The spec was written from what the code expects, not from the place.
+- [ ] **MCP-VERIFIABLE.** Read Output for `InputController` warnings about a missing HUD or touch button.
+- [ ] **NEEDS STUDIO.** Publish a checkpoint, then connect the Rojo plugin and confirm the three folders land where Script Sync put them, with no double nesting and no loss of Studio-side instances.
 
 **M0.5 exit condition:** a clean checkout plus `rokit install` reproduces the toolchain, all static gates pass, Rojo syncs into the private place without loss, and the HUD contract matches the place.
 

@@ -74,6 +74,8 @@ An LLM editing local files does not automatically know:
 
 If Studio MCP is connected, verify the active private prototype before any action. If it is not connected, provide the relevant Explorer tree, property values, and error output.
 
+Studio MCP changes only the first two items in that list. It lets an agent read the data model and Output instead of guessing, which is worth a great deal — but it does **not** let it judge whether a multiplayer or mobile test passed, and it must not be used to edit scripts, because Rojo overwrites Studio-side script edits silently (D-024). MCP servers also load at session start, so a server registered mid-session is unavailable until a new one begins.
+
 ## Decision-update prompt
 
 ```text

@@ -147,7 +147,7 @@ Recorded, not individually fixed:
 
 - Four phrasings of one disc diameter: "approximately 759-stud," "758.95-stud," and "240 × √10." Numerically consistent; no single doc gives the canonical figure with its derivation.
 - **Every document shares one date**, 2026-07-23, so dates currently carry zero signal about staleness.
-- The `OUT` label is defined in AGENTS.md and never used anywhere; exclusions are prose lists instead.
+- The `OUT` label is defined in AGENTS.md and never used anywhere; exclusions are prose lists instead. **First applied later the same day by D-025**, which records the rejected MCP servers as OUT with a revisit trigger.
 - Two status vocabularies coexist: product decisions use `LOCKED`, the ledger uses `APPROVED`. Asking "what's approved?" gets different answers in different documents.
 - Two competing playtest-note templates with different fields and no statement of which is canonical. **FIXED** by a single canonical template.
 - README's "Document version: 0.1" did not move across five subsequent commits that changed the arena spec materially. **FIXED.**
