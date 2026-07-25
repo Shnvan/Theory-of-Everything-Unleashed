@@ -15,5 +15,9 @@
 ]]
 
 local InputController = require(script.Parent.Controllers.InputController)
+local MovementController = require(script.Parent.Controllers.MovementController)
 
+-- Order matters: MovementController subscribes to InputController's action
+-- signal and queries its hold state, so input must be live first.
 InputController.Start()
+MovementController.Start()

@@ -37,6 +37,30 @@ CombatConfig.M1_CHAIN_TOTAL_DAMAGE = 20
 -- DEFAULT. Seconds after a hit before the chain resets to its first attack.
 CombatConfig.COMBO_RESET_SECONDS = 1.1
 
+-- Movement --------------------------------------------------------------------
+
+--[[
+	Speed is derived from movement input, never requested (D-028). There is no
+	sprint action and no auto-sprint threshold, because the engine already
+	supplies one: measured 2026-07-26, a move vector of magnitude 0.5 produced
+	exactly half the speed of magnitude 1.0. So a part-deflected thumbstick walks
+	on its own, full deflection reaches the cap, and "automatic at full movement
+	input" needs no constant to express.
+
+	`Walk` therefore exists only because a keyboard is binary -- `W` is always
+	full magnitude, so without a modifier a desktop player would have exactly one
+	speed.
+]]
+
+-- DEFAULT (P-010). The normal cap, and deliberately Roblox's engine default:
+-- docs/OMNISCIENCE_COLISEUM.md measured the arena's crossing time at this value,
+-- so changing it invalidates that measurement and P-008 along with it.
+CombatConfig.SPRINT_SPEED = 16
+
+-- DEFAULT (P-011). Half, so holding Walk reads as a deliberate choice rather
+-- than a slight nudge.
+CombatConfig.WALK_SPEED = 8
+
 -- Death and respawn -----------------------------------------------------------
 
 -- DEFAULT (P-002)
@@ -94,6 +118,16 @@ CombatConfig.MAX_ACTION_REQUESTS_PER_SECOND = 20
 ]]
 function CombatConfig.getAssistDamageThreshold(): number
 	return CombatConfig.MAX_HEALTH * CombatConfig.ASSIST_DAMAGE_FRACTION
+end
+
+--[[
+	Returns the `Humanoid.WalkSpeed` cap for the current hold state.
+
+	Pure, so the rule is testable without a character. The controller applies the
+	number and decides nothing.
+]]
+function CombatConfig.getMoveSpeed(isWalkHeld: boolean): number
+	return if isWalkHeld then CombatConfig.WALK_SPEED else CombatConfig.SPRINT_SPEED
 end
 
 --[[

@@ -25,7 +25,11 @@
 
 **Speed is derived from movement input, not requested.** Sprinting happens automatically when the movement vector is at full magnitude, so it costs no button and no finger. `Walk` exists only because a keyboard is binary — `W` is always full magnitude, so without a modifier a desktop player could never move slowly. A thumbstick pushed part-way already walks. Neither speed is a combat state; both layer on `Neutral` (D-028, superseding D-021).
 
-The auto-sprint threshold is a tunable and belongs in `CombatConfig` when movement is implemented. It is deliberately not there yet — nothing reads it, and an unread constant is a number waiting to drift.
+**There is no auto-sprint threshold, and none is needed.** Measured on 2026-07-26: a move vector of magnitude 0.5 produced exactly half the speed of magnitude 1.0. The engine already scales speed by input magnitude, so a part-deflected stick walks on its own and full deflection reaches the cap. Sprinting is simply the normal `Humanoid.WalkSpeed`; `Walk` lowers it.
+
+Speed is therefore two values, both DEFAULT and both in `CombatConfig`: `SPRINT_SPEED` (P-010) and `WALK_SPEED` (P-011). `CombatConfig.getMoveSpeed(isWalkHeld)` owns the choice between them, so the controller applies a number and decides nothing.
+
+One consequence worth knowing: `Humanoid.MoveDirection` is **normalised** and reports magnitude 1 even for a half-deflected stick, so it cannot be used to read how far the stick is pushed. Nothing here needs that — but code that assumes otherwise will be wrong.
 
 Mobile is not a later port. Every combat action must have a clear touch equivalent and visible cooldown/state feedback. **An action with no touch button must be one a touch player never needs**, which is why `Walk` qualifies and nothing else does.
 

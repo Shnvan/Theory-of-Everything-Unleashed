@@ -19,5 +19,6 @@ local testkit = require("./lib/testkit")
 
 require("./specs/CombatTypes.spec")
 require("./specs/CombatStateMachine.spec")
+require("./specs/Movement.spec")
 
 process.exit(testkit.report())
