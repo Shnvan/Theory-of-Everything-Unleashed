@@ -15,7 +15,9 @@
 	to is specified in docs/HUD_AND_UI_SPEC.md.
 
 	Keyboard bindings are DEFAULT and match the table in docs/COMBAT_SYSTEM.md.
-	Sprint on Shift is recorded as D-021.
+	Shift is `Walk`, a deliberate slow-down, because sprinting is automatic at
+	full movement input and therefore not an input action at all. Recorded as
+	D-028, which supersedes D-021.
 ]]
 
 local CombatTypes = require(script.Parent.Parent.Types.CombatTypes)
@@ -33,7 +35,12 @@ export type ActionDefinition = {
 	bindingName: string,
 	-- Name of the GuiButton under GameHUD.TouchControls that triggers this
 	-- action. See docs/HUD_AND_UI_SPEC.md for the required GUI tree.
-	touchButtonName: string,
+	--
+	-- Optional, because not every action needs a touch button. `Walk` has none:
+	-- the mobile thumbstick is analogue, so pushing it part-way already walks,
+	-- while a keyboard is binary and needs an explicit modifier. An action with
+	-- no button here simply never appears in DEFINITION_BY_TOUCH_BUTTON.
+	touchButtonName: string?,
 	-- Hold actions report End and Cancel. Tap actions report Begin only.
 	isHoldAction: boolean,
 	-- Passed straight to ContextActionService:BindAction.
@@ -111,9 +118,10 @@ local ACTION_DEFINITIONS: { ActionDefinition } = {
 		inputs = { Enum.KeyCode.G },
 	},
 	{
-		action = "Sprint",
-		bindingName = "TOEU_Sprint",
-		touchButtonName = "SprintButton",
+		action = "Walk",
+		bindingName = "TOEU_Walk",
+		-- No touch button by design; see the ActionDefinition comment above.
+		touchButtonName = nil,
 		isHoldAction = true,
 		inputs = { Enum.KeyCode.LeftShift, Enum.KeyCode.RightShift },
 	},
@@ -163,7 +171,13 @@ local definitionByTouchButton: { [string]: ActionDefinition } = {}
 
 for _, definition in ACTION_DEFINITIONS do
 	definitionByBinding[definition.bindingName] = definition
-	definitionByTouchButton[definition.touchButtonName] = definition
+
+	-- Actions without a touch button are simply absent from this map, so the
+	-- input layer never looks for a GuiButton that the HUD spec does not list.
+	local touchButtonName = definition.touchButtonName
+	if touchButtonName ~= nil then
+		definitionByTouchButton[touchButtonName] = definition
+	end
 end
 
 InputConfig.DEFINITION_BY_BINDING = table.freeze(definitionByBinding)

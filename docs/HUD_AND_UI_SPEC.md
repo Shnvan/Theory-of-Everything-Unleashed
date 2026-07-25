@@ -27,8 +27,11 @@ StarterGui
       DashButton               GuiButton
       MechanicButton           GuiButton
       BreakthroughButton       GuiButton
-      SprintButton             GuiButton    -- hold
 ```
+
+**Nine buttons, not ten.** `SprintButton` was removed by **D-028**: sprinting is automatic at full movement input, so there is nothing for a sprint button to request. `Walk` replaced `Sprint` in the action set and deliberately has **no** touch button — an analogue thumbstick pushed part-way already walks, while a keyboard needs `Shift` because `W` is binary.
+
+That is why `touchButtonName` is **optional** in `InputConfig.ActionDefinition`. An action without one never enters `DEFINITION_BY_TOUCH_BUTTON`, so the input layer never hunts for a GuiButton this document does not list — which is what would otherwise produce a `warn()` every session.
 
 Contract rules:
 
@@ -71,13 +74,14 @@ Each icon lives in an `ImageLabel` named `Icon`, a child of its button. Ledger r
 |---|---|---|---|
 | `BasicAttackButton` | Fist | `lorc/punch` | `85239036663948` |
 | `BlockButton` | Shield | `sbed/shield` | `94413571867350` |
-| `DashButton` | Four-way directional arrow | `delapouite/move` | `89977891032744` |
-| `SprintButton` | Running figure | `lorc/sprint` | `87301382738025` |
+| `DashButton` | Forward burst | `delapouite/fast-forward-button` | `80510587140014` |
 | `MechanicButton` | Vortex | `lorc/vortex` | `133264139799883` |
 | `BreakthroughButton` | Light bulb | `lorc/light-bulb` | `105324694393567` |
 | `Ability1–4Button` | Numerals `1` `2` `3` `4`, the button's own `Text` | — | — |
 
-Why a four-way arrow for Dash: [COMBAT_SYSTEM.md](COMBAT_SYSTEM.md) defines dash as **directional** — button plus movement input — so the metaphor is literal rather than decorative. Why a bulb for Breakthrough: every available lightning icon was a busy shard cluster unreadable at 64px, and the meter that gates it is literally called Discovery. That is the one place theme-fit beat strict convention.
+Why a forward burst for Dash rather than a directional arrow: the button does **not** choose a direction. [COMBAT_SYSTEM.md](COMBAT_SYSTEM.md) defines dash as button *plus movement input*, so the stick supplies direction and the icon should promise speed, not a compass. An earlier four-way arrow (`delapouite/move`) was replaced for exactly this reason under D-028.
+
+Why a bulb for Breakthrough: every available lightning icon was a busy shard cluster unreadable at 64px, and the meter that gates it is literally called Discovery. That is the one place theme-fit beat strict convention.
 
 Numerals are permitted; **word labels are not**. A numeral carries information an icon cannot — which slot, how many seconds remain. `ATK`, `BLOCK`, `RUN`, `DASH`, `BREAK`, and `R` carried none the icon does not.
 
@@ -88,7 +92,7 @@ Numerals are permitted; **word labels are not**. A numeral carries information a
 | Tier | Buttons | Size (scale of X) |
 |---|---|---|
 | Primary | `BasicAttack`, `Block` — equal | ~0.115 |
-| Secondary | `Dash`, `Mechanic`, `Breakthrough`, `Sprint` | ~0.085 |
+| Secondary | `Dash`, `Mechanic`, `Breakthrough` | ~0.085 |
 | Ability | `Ability1–4` | ~0.075 |
 
 ---
@@ -114,40 +118,45 @@ Use `GuiService:GetGuiInset()` and a `ScreenInsets` setting of `DeviceSafeInsets
 
 ### Placement
 
-- **Combat buttons cluster on the right**, above and inboard of the jump button, reachable by the right thumb without covering the character.
-- **Sprint sits near the left thumb**, because it is a movement modifier used while steering — not with the combat cluster.
+- **Combat buttons form a staggered two-column arc on the right**, above and inboard of the jump button, reachable by the right thumb without covering the character. This is the genre-standard arrangement and derives from Roblox's own default jump-button placement, so players arrive with the muscle memory already built.
+- **Abilities sit as a numbered row across the bottom-centre**, below the character rather than over it. They are deliberate choices, not reflexes, so they do not need the thumb-rest positions.
+- **No combat control sits on the left.** The left thumb steers and does nothing else. Sprint used to live there; D-028 removed it by deriving speed from movement input instead.
 - **Block and Basic Attack are the joint-largest and most reachable.** Block is held, used reactively, and mispressing it is the most punishing miss. *(This previously read "Block is the largest" while the Sizes table below said "equal to basic attack" — the two contradicted each other. Joint-largest is the reconciled rule.)*
 - Breakthrough is visually distinct and **only interactive at full meter**. It is not hidden when unavailable, because players need to learn it exists.
 
-Positions as `Scale` within `TouchControls`. DEFAULT — retune from device testing, but **re-run the geometry check afterwards**; these values were computed and machine-validated, not eyeballed.
+The arrangement follows the genre standard: **a numbered ability row across the bottom-centre, and the combat actions in a staggered two-column arc on the right.** Positions as `Scale` within `TouchControls`.
 
-| Button | x | y | Shares column with |
+| Button | x | y | Column |
 |---|---:|---:|---|
-| `Ability1Button` | 0.545 | 0.270 | — |
-| `Ability2Button` | 0.635 | 0.270 | `BreakthroughButton` |
-| `Ability3Button` | 0.725 | 0.270 | — |
-| `Ability4Button` | 0.815 | 0.270 | — |
-| `BreakthroughButton` | 0.635 | 0.560 | `Ability2Button` |
-| `MechanicButton` | 0.755 | 0.470 | `BlockButton` |
-| `BlockButton` | 0.755 | 0.710 | `MechanicButton` |
-| `DashButton` | 0.900 | 0.360 | `BasicAttackButton` |
-| `BasicAttackButton` | 0.900 | 0.600 | `DashButton` |
-| `SprintButton` | **0.115** | 0.430 | — |
+| `BasicAttackButton` | 0.750 | 0.760 | inner — nearest the thumb rest |
+| `BlockButton` | 0.900 | 0.620 | outer |
+| `DashButton` | 0.750 | 0.460 | inner |
+| `MechanicButton` | 0.900 | 0.340 | outer |
+| `BreakthroughButton` | 0.750 | 0.190 | inner |
+| `Ability1Button` | 0.365 | 0.850 | bottom-centre row |
+| `Ability2Button` | 0.455 | 0.850 | " |
+| `Ability3Button` | 0.545 | 0.850 | " |
+| `Ability4Button` | 0.635 | 0.850 | " |
 
-Buttons snap onto **shared columns** (0.900, 0.755, 0.635) rather than sitting a hundredth apart. A near-miss reads as sloppiness, and the previous layout had two.
+**The arc is ordered by reachability, nearest the thumb first:** Attack, Block, Dash, Mechanic, Breakthrough. Reference layouts in this genre often place block at the *top* of the arc; that is not copied, because the rule above requires block to be among the most reachable — it is a reactive hold and mispressing it is the most punishing miss in the game. Do not "correct" this back.
 
-`SprintButton` sits on the **left**, above the thumbstick zone. It was previously at x = 0.79 among the combat cluster, contradicting the placement rule above.
+**The entire left half is free of combat controls** (D-028). The left thumb steers and does nothing else.
 
 ### Geometry check
 
-Hand-placing this layout produced three real defects — a 0.09px Block/Breakthrough gap, Basic Attack 10.6px inside the jump reserve, Ability4 13.7px inside the chat reserve. **Validate, do not eyeball.** At 750×361, check:
+**Validate against live rendered geometry, not arithmetic.** Two separate rounds of hand-placement produced measured defects, and one round of *correct* arithmetic still produced three, because the arithmetic used wrong inputs. Read `AbsolutePosition` and `AbsoluteSize` from a running client with device emulation on, then check:
 
-- all 45 button pairs for an edge gap `< 8px`
-- every button box against the four reserved zones
-- any two buttons within 0.02 scale of an axis without exactly sharing it
+- every button pair for an edge gap `< 8px`
+- every box against the four reserved zones, **measured against the viewport**
+- every button against the 44pt tappable floor
 - anything outside the screen
 
-The current values pass all four with **zero failures**; the tightest pair is 11.25px.
+Two traps this has already caught, both invisible to inspection:
+
+1. **`TouchControls` is shorter than the viewport.** At a 685×338 viewport it is 685×**280** — `ScreenInsets = CoreUISafeInsets` takes the difference. Y positions are scale of *that*, so validating vertical gaps against viewport height overstates every one of them by around 20%.
+2. **`UIAspectRatioConstraint.AspectType` must be `ScaleWithParentSize`.** The default, `FitWithinMaxSize`, fits the square inside the element's own `Size` box — and since `Size.Y` is `{0,0}` that box has no height, so the button collapses and `UISizeConstraint.MinSize` becomes the only thing giving it a size. Every button silently rendered at its floor, and would never have grown on a larger screen.
+
+Current values pass with **zero failures** at a 685×338 emulated viewport; tightest pair 9.9px, Attack and Block render at 78px.
 
 ### Sizes
 
@@ -158,7 +167,7 @@ DEFAULT, from mobile touch-target guidance. Tune from device testing, never belo
 | Basic attack | 44 × 44 pt | Largest in the cluster |
 | Block | 44 × 44 pt | Equal to basic attack |
 | Ability 1–4 | 44 × 44 pt | Uniform, smaller than block |
-| Dash, Mechanic, Breakthrough, Sprint | 44 × 44 pt | Uniform |
+| Dash, Mechanic, Breakthrough | 44 × 44 pt | Uniform |
 | Gap between adjacent buttons | 8 pt | 8–12 pt |
 
 Use `UIAspectRatioConstraint` plus `Scale`-based sizing so buttons hold proportion across aspect ratios. **No button may overlap another**, including its transparent padding, at any supported viewport.
@@ -198,7 +207,8 @@ Numbers displayed here are presentation only. The server owns every value; the H
 
 The HUD is acceptable when, on the target viewport in device emulation:
 
-- [ ] Every one of the ten buttons exists with the exact name and class above, and no `InputController` warning appears in Output.
+- [ ] Every one of the nine buttons exists with the exact name and class above, and no `InputController` warning appears in Output.
+- [ ] Sprinting engages on its own at full stick deflection, and easing off the stick walks — with no button involved.
 - [ ] All ten are reachable by thumb without covering the player's own character.
 - [ ] No two buttons overlap, and none collides with a reserved zone.
 - [ ] Health, active cooldowns, and meter are readable at a glance during combat.

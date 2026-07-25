@@ -20,11 +20,16 @@
 | Dash / escape | `Q` + movement | Dash button + movement input | Directional dash; limited ragdoll escape |
 | Character mechanic | `R` | Mechanic button | Unique to the fighter |
 | Breakthrough | `G` | Meter button | Available only when Discovery Meter is full |
-| Sprint | `LeftShift` / `RightShift`, held | `SprintButton`, held | A movement modifier, not a combat state (D-021) |
+| Sprint | — | — | **Not an input.** Automatic at full movement input (D-028) |
+| Walk | `LeftShift` / `RightShift`, held | — | Deliberate slow-down. No touch button: the thumbstick is already analogue |
 
-Mobile is not a later port. Every combat action must have a clear touch equivalent and visible cooldown/state feedback.
+**Speed is derived from movement input, not requested.** Sprinting happens automatically when the movement vector is at full magnitude, so it costs no button and no finger. `Walk` exists only because a keyboard is binary — `W` is always full magnitude, so without a modifier a desktop player could never move slowly. A thumbstick pushed part-way already walks. Neither speed is a combat state; both layer on `Neutral` (D-028, superseding D-021).
 
-Bindings and touch-button names live in `src/shared/Config/InputConfig.luau`; the Studio GUI they resolve against is specified in [HUD_AND_UI_SPEC.md](HUD_AND_UI_SPEC.md). Only Block and Sprint are hold actions — every other action reports a press and never a release.
+The auto-sprint threshold is a tunable and belongs in `CombatConfig` when movement is implemented. It is deliberately not there yet — nothing reads it, and an unread constant is a number waiting to drift.
+
+Mobile is not a later port. Every combat action must have a clear touch equivalent and visible cooldown/state feedback. **An action with no touch button must be one a touch player never needs**, which is why `Walk` qualifies and nothing else does.
+
+Bindings and touch-button names live in `src/shared/Config/InputConfig.luau`; the Studio GUI they resolve against is specified in [HUD_AND_UI_SPEC.md](HUD_AND_UI_SPEC.md). Only Block and Walk are hold actions — every other action reports a press and never a release.
 
 ## Prototype defaults
 

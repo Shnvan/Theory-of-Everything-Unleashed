@@ -36,7 +36,7 @@ export type ActionName =
 	| "Dash"
 	| "Mechanic"
 	| "Breakthrough"
-	| "Sprint"
+	| "Walk"
 
 --[[
 	`Begin` on press. `End` on release. `Cancel` when the engine withdraws an
@@ -114,9 +114,10 @@ export type CombatState =
 	docs/COMBAT_SYSTEM.md. Encoded as data so transition rules compare priority
 	in one place instead of re-deriving the order at each call site.
 
-	Note that `Sprint` is an action but not a state. Sprinting is a movement
-	modifier layered on `Neutral`, not a combat state, so it cannot suppress or
-	be suppressed by combat states. Recorded as D-021.
+	Note that speed is not a state. Sprinting is automatic at full movement
+	input and `Walk` is a deliberate slow-down modifier; both layer on
+	`Neutral` rather than replacing it, so neither can suppress or be
+	suppressed by a combat state. Recorded as D-028, which supersedes D-021.
 ]]
 local STATE_PRIORITY: { [CombatState]: number } = table.freeze({
 	Dead = 10,
@@ -140,7 +141,7 @@ CombatTypes.STATE_PRIORITY = STATE_PRIORITY
 ]]
 CombatTypes.HOLD_ACTIONS = table.freeze({
 	Block = true,
-	Sprint = true,
+	Walk = true,
 }) :: { [ActionName]: boolean }
 
 CombatTypes.ABILITY_SLOT_BY_ACTION = table.freeze({
