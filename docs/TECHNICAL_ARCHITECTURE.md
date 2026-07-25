@@ -1,6 +1,8 @@
 # Technical Architecture
 
-The prototype uses Roblox Studio for the place and assets, an external IDE for Luau and documentation, and Script Sync for selected script-only folders.
+The prototype uses Roblox Studio for the place and assets, an external IDE for Luau and documentation, and **Rojo** to sync the three script-only folders (D-018; Script Sync remains a documented fallback).
+
+Engineering habits and reviewable checks derived from this document are in [DEVELOPER_RULES.md](DEVELOPER_RULES.md). Where the two disagree, this document wins.
 
 ## Architecture goals
 
@@ -11,26 +13,34 @@ The prototype uses Roblox Studio for the place and assets, an external IDE for L
 - Easy cleanup on death, reset, disconnect, and respawn.
 - No framework dependency until a demonstrated need appears.
 
-## Planned local source tree
+## Local source tree
+
+Present state marked, planned entries unmarked.
 
 ```text
 src/
-  shared/
+  shared/                            -> ReplicatedStorage/GameShared
     Combat/
     Characters/
     Config/
+      CombatConfig.luau              exists
+      InputConfig.luau               exists
     Net/
     Types/
-  server/
+      CombatTypes.luau               exists
+  server/                            -> ServerScriptService/GameServer
     Services/
     Bootstrap.server.luau
-  client/
+  client/                            -> StarterPlayerScripts/GameClient
     Controllers/
+      InputController.luau           exists
     UI/
-    Bootstrap.client.luau
+    Bootstrap.client.luau            exists
 ```
 
-The `src` tree is created when Script Sync is configured. Exact filenames may evolve, but the layer boundaries must remain.
+Exact filenames may evolve, but the layer boundaries must remain. `default.project.json` encodes the three mappings; `rojo build` output is a syntax check, not the game place, and must never be published over it.
+
+Note that the folder name inside each mapped Studio location is supplied by the mapping, not by a folder on disk. Files live directly at `src/client/...`, not `src/client/GameClient/...` — the extra level was a real bug, corrected on 2026-07-25.
 
 ## Studio mapping
 
@@ -40,7 +50,7 @@ The `src` tree is created when Script Sync is configured. Exact filenames may ev
 | `ServerScriptService/GameServer` | `src/server` | Authoritative combat, validation, damage, KOs, respawn |
 | `StarterPlayer/StarterPlayerScripts/GameClient` | `src/client` | Input, predicted presentation, camera, VFX, sound, HUD |
 
-Keep non-script instances outside these synced code folders. Script Sync ignores most non-script instances and does not preserve script attributes or tags.
+Keep non-script instances outside these synced code folders. Rojo would overwrite them on sync, and the fallback Script Sync path ignores most non-script instances and does not preserve script attributes or tags. Anything code resolves by name inside Studio needs a written contract instead — see [HUD_AND_UI_SPEC.md](HUD_AND_UI_SPEC.md).
 
 ## Responsibility boundary
 
@@ -94,19 +104,23 @@ Suggested prototype surface:
 - `CombatEvent`: server to relevant clients.
 - `RequestCharacterSelection`: client to server, later.
 
-Illustrative shared type:
+The shared type is now real code, in `src/shared/Types/CombatTypes.luau`:
 
 ```luau
---!strict
-
 export type ActionRequest = {
     sequence: number,
-    action: "BasicAttack" | "BlockStart" | "BlockEnd" | "Dash" | "Ability",
-    slot: number?,
+    action: ActionName,          -- BasicAttack | Ability1..4 | Block | Dash | Mechanic | Breakthrough | Sprint
+    phase: InputPhase,           -- Begin | End | Cancel
     direction: Vector3?,
     targetPosition: Vector3?,
 }
 ```
+
+This reconciles an earlier conflict. This document previously specified `BlockStart`/`BlockEnd` and `Ability` plus a numeric `slot`, while the client emitted `Block` plus a phase and explicit `Ability1..4`. Two shapes existed for one concept before a single remote was written, because the only type contract lived in a client module.
+
+The resolution keeps the client's form, for two reasons. A phase generalizes: every future hold action gets release semantics for free, where `XStart`/`XEnd` needs a new pair of names each time. And explicit ability actions let the server check **one** union exhaustively instead of validating a tag and then range-checking a slot — one validation path rather than two. Use `CombatTypes.getAbilitySlot` where a slot number is genuinely needed.
+
+`ActionRequest` deliberately carries less than the client's own `ActionInput`. Device identity (`inputType`, `keyCode`) is useless to the server, and `timestamp` comes from `os.clock()` — a client-monotonic value with an arbitrary epoch that cannot be compared against server time and is not a substitute for `sequence`.
 
 This is a transport shape, not proof that a request is valid.
 
@@ -131,12 +145,15 @@ For hits, also verify target state, team/FFA rules, distance, block direction, s
 
 ### Shared
 
-- `CombatTypes`: typed state and result shapes.
-- `CombatConfig`: universal tunables.
-- `CombatStateMachine`: legal transition rules.
+- `CombatTypes` **(exists)**: typed state and result shapes, the state-priority table, and the reconciled `ActionRequest`.
+- `CombatConfig` **(exists)**: universal tunables, each labelled LOCKED or DEFAULT.
+- `InputConfig` **(exists)**: action, bind name, touch-button name, hold flag, and keybinds in one table.
+- `CombatStateMachine`: legal transition rules. Consumes `CombatTypes.STATE_PRIORITY`.
 - `CharacterDefinitions`: data for available fighters and ability slots.
 - `AbilityDefinitions`: cooldown, range, tags, and presentation IDs.
 - `NetTypes`: remote payload types and validation helpers.
+
+Keep shared modules **pure** — no services, no instances, no side effects. That is what makes transition legality, cooldown math, meter clamping, assist attribution, and block-arc geometry unit testable without the engine, which is the only way to stop every combat change costing a manual two-client playtest.
 
 ### Server
 
@@ -196,6 +213,22 @@ It must not bypass server services or implement its own unrelated health, KO, or
 - Session KOs, assists, and meter live only on the server.
 - Add DataStore-backed profiles only after the public-alpha schema is deliberately designed and versioned.
 
+## Keeping the door open to Server Authority
+
+Roblox shipped engine-level client prediction and rollback resimulation as a Client Beta in April 2026 — after this document was first written. D-020 defers adoption to a timeboxed M2 spike, because the beta's documented gaps hit this game directly. See [TOOLING_AND_PIPELINE.md](TOOLING_AND_PIPELINE.md) for the specifics.
+
+Until that spike reports, keep the option cheap:
+
+- Put combat simulation in modules that take state and inputs and return results. Do not entangle it with remote plumbing, so it could later run under `BindToSimulation` without a rewrite.
+- Keep presentation strictly downstream of simulation. Rollback resimulation replays simulation, and anything with a side effect baked into it will replay that side effect.
+- Do not build a hand-rolled prediction or reconciliation framework in the meantime. The current plan — immediate reversible wind-up, server-confirmed results — is sufficient for M1 and M2 and is not wasted either way.
+
+## Studio dependencies
+
+Any code that resolves a Studio instance by name needs a written repository-side contract, because non-script instances stay out of the synced folders and therefore cannot be versioned as instances. See [HUD_AND_UI_SPEC.md](HUD_AND_UI_SPEC.md) and D-022. Without one, renaming a single instance silently disables a feature with no compile-time signal.
+
 ## Test requirement
 
 Any change to remotes, hit detection, state transitions, damage, cooldowns, KOs, or respawn is incomplete until it passes a Studio server-and-two-clients test. Input and HUD changes also require mobile device emulation.
+
+Static gates run first and are not a substitute: `stylua --check src`, `selene src`, `luau-lsp analyze`, `rojo build`. They are enforced in CI.

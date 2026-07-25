@@ -15,6 +15,15 @@ Before changing code or design:
 
 For milestone planning, new systems, production decisions, or large cross-discipline features, also read `docs/ROBLOX_GAME_DEVELOPMENT_PLAYBOOK.md`. Tiny isolated fixes do not require it.
 
+Then, by kind of work:
+
+- Writing code: `docs/DEVELOPER_RULES.md`.
+- Designing a move, ability, or character: `docs/DESIGN_PHILOSOPHY.md`, and fill in `docs/templates/MOVE_SPEC.md` first.
+- Touching input or HUD: `docs/HUD_AND_UI_SPEC.md`.
+- Choosing a tool, library, or pipeline: `docs/TOOLING_AND_PIPELINE.md`.
+- Working with an AI agent: `docs/AI_ASSISTED_WORKFLOW.md`.
+- Understanding current project state and known problems: `docs/PROJECT_AUDIT_2026-07-25.md`.
+
 ## Current milestone
 
 Build the universal combat foundation and a small **Gravity Sovereign** vertical slice. The game is not yet at public-alpha content production.
@@ -25,7 +34,7 @@ Build the universal combat foundation and a small **Gravity Sovereign** vertical
 - Primary mode: continuous public free-for-all battleground.
 - Target server size: eight players.
 - Prototype character: Gravity Sovereign, inspired by Isaac Newton.
-- Prototype environment: one contained graybox arena with an approximately 759-stud combat disc and physical plus fail-safe perimeter containment.
+- Prototype environment: The Omniscience Coliseum, one contained arena with an approximately 759-stud combat disc, eight thematic sectors, 24 static exhibits, and physical plus fail-safe perimeter containment. It is a detailed static prototype, not final production art.
 - Controls: four-hit basic combo, block, dash/limited escape, four future ability slots, character mechanic, and Breakthrough meter.
 - Final Proof is a short stylized KO effect, not a long execution cinematic.
 - Combat uses no blood, dismemberment, torture, or realistic death.
@@ -40,8 +49,10 @@ Do not reopen a locked decision merely because another popular battleground uses
 - Treat the server as authoritative for damage, cooldowns, hit eligibility, KOs, meter gain, and respawning.
 - Clients may request an action and predict presentation. They may never declare damage, a KO, currency, or meter gain.
 - Validate remote requests for action type, character state, cooldown, rate, range, and plausible target.
-- Keep tunable values in shared configuration modules instead of scattering numbers through scripts.
-- Prefer small ModuleScripts with explicit responsibilities. Do not add a framework or package manager during the prototype without a concrete need.
+- Keep tunable values in shared configuration modules instead of scattering numbers through scripts. They live in `src/shared/Config/`.
+- Keep shared modules pure — no services, no instances, no side effects — so they can be unit tested without the engine.
+- Prefer small ModuleScripts with explicit responsibilities. The toolchain in `rokit.toml` is settled (D-018); do not add a framework, or a Wally package, without a concrete need.
+- Run the static gates before calling a change complete: `stylua --check src`, `selene src`, `luau-lsp analyze`, `rojo build`.
 - Avoid `_G`, shared mutable globals, unbounded loops, and one RemoteEvent per move.
 - Separate simulation/gameplay state from VFX, sound, camera shake, and UI.
 - Never let a cosmetic failure block combat simulation.
@@ -82,7 +93,7 @@ Documents use these labels:
 - **OPEN:** unresolved decision.
 - **OUT:** outside current scope.
 
-Never convert a DRAFT or OPEN item into a LOCKED requirement silently.
+Never convert a DRAFT or OPEN item into a LOCKED requirement silently. This project has already broken that rule once, in code — see D-021 — so treat it as a live risk rather than a formality. If implementation forces a choice a document leaves OPEN, stop and record the decision.
 
 ## Source-of-truth priority
 
@@ -93,3 +104,5 @@ Never convert a DRAFT or OPEN item into a LOCKED requirement silently.
 5. Older notes and LLM output.
 
 When the first four disagree, stop and surface the conflict.
+
+Two sources of truth live outside Markdown and rank with the domain document for their subject: `src/shared/Config/` for tunable numbers, and the Studio place for the arena, GUI, rigs, and audio. A number in a document that disagrees with `CombatConfig` means one of them needs fixing — say which.

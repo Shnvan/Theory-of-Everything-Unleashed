@@ -20,9 +20,11 @@
 | Dash / escape | `Q` + movement | Dash button + movement input | Directional dash; limited ragdoll escape |
 | Character mechanic | `R` | Mechanic button | Unique to the fighter |
 | Breakthrough | `G` | Meter button | Available only when Discovery Meter is full |
-| Sprint | Movement rule to be selected | Virtual-stick rule | Must not conflict with mobile combat input |
+| Sprint | `LeftShift` / `RightShift`, held | `SprintButton`, held | A movement modifier, not a combat state (D-021) |
 
 Mobile is not a later port. Every combat action must have a clear touch equivalent and visible cooldown/state feedback.
+
+Bindings and touch-button names live in `src/shared/Config/InputConfig.luau`; the Studio GUI they resolve against is specified in [HUD_AND_UI_SPEC.md](HUD_AND_UI_SPEC.md). Only Block and Sprint are hold actions — every other action reports a press and never a release.
 
 ## Prototype defaults
 
@@ -37,9 +39,11 @@ Mobile is not a later port. Every combat action must have a clear touch equivale
 | Ragdoll-escape cooldown | 20 seconds | DEFAULT |
 | Discovery Meter maximum | 100 | DEFAULT |
 | Assist lookback window | 10 seconds | DEFAULT |
+| Assist damage threshold | 10% of maximum health | DEFAULT |
+| Block arc | About 120 degrees, frontal | DEFAULT |
 | Arena crossing time | About 53 seconds | DEFAULT, revised by D-015 |
 
-All numeric values belong in configuration modules.
+**These values now live in `src/shared/Config/CombatConfig.luau`, which is the source of truth for them.** This table is the explanation; the module is the number. If they disagree, say so rather than picking one.
 
 ## Combat states
 
@@ -58,6 +62,8 @@ Every character has one authoritative primary state:
 
 Short flags may supplement the state only when they do not create contradictory combinations.
 
+There is deliberately no `Sprinting` state. Sprint is a movement modifier layered on `Neutral`, so it cannot suppress or be suppressed by a combat state (D-021).
+
 ### State priority
 
 From strongest to weakest:
@@ -74,6 +80,8 @@ From strongest to weakest:
 10. Neutral
 
 An implementation may refine this model, but it must define legal transitions centrally. Do not let each move invent its own stun, lock, or invulnerability flags.
+
+The state list and this priority order exist as data in `src/shared/Types/CombatTypes.luau` (`CombatState`, `STATE_PRIORITY`, `isStrongerThan`). The transition rules themselves are not written yet.
 
 ## M1 chain
 

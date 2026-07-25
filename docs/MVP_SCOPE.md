@@ -8,7 +8,7 @@ This project has three different scope levels. Do not treat the long-term roster
 
 ### Included in Scope A
 
-- One graybox arena.
+- One arena: The Omniscience Coliseum, built as a detailed static prototype rather than final production art.
 - One player character using placeholder visuals.
 - One training dummy.
 - Keyboard/mouse and touch input paths.
@@ -45,7 +45,7 @@ Build only after Scope A passes.
 - Short Final Proof KO effect.
 - Placeholder but coherent animation, VFX, SFX, HUD, and mobile buttons.
 - Up to eight players in a local/private test.
-- Limited graybox breakable elements only if combat is already stable.
+- Limited prototype-quality breakable elements only if combat is already stable.
 
 ### Excluded from Scope B
 

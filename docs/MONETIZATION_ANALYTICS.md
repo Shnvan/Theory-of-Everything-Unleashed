@@ -32,7 +32,7 @@ Initial cash budget: approximately US$100.
 
 | Use | Maximum plan | Gate |
 |---|---:|---|
-| Icon and thumbnail | $60 | Spend only after the graybox loop tests well |
+| Icon and thumbnail | $60 | Spend only after the prototype loop tests well |
 | One reusable animation or VFX improvement | $25 | Spend only where a visible prototype weakness is proven |
 | Contingency | $15 | Keep uncommitted |
 | Ads | $0 initially | Do not buy traffic before retention evidence |

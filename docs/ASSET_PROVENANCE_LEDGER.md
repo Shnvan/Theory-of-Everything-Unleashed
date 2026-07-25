@@ -4,7 +4,7 @@
 
 **Applies to:** every external or generated model, mesh, texture, image, animation, audio file, font, plugin, extension, code dependency, dataset-derived visual, or commissioned work
 
-**Last reviewed:** 2026-07-23
+**Last reviewed:** 2026-07-25
 
 ## Rules
 
@@ -45,9 +45,18 @@ Approval of one item does not authorize another purchase or a renewal.
 
 | ID | Asset and type | Purpose | Creator/source | Source URL or file | License/permission | Commercial use | Modification | Attribution | Cost/approval | Receipt | Local source/hash | Roblox asset ID | Obtained | Reviewer/status | Shipped |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `REF-ARENA-001` | `ChatGPT Image Jul 23, 2026, 07_15_55 PM (1).png`; image | Coliseum composition and mood reference | User-provided generated image | `C:\Users\Ivan\Downloads\ChatGPT Image Jul 23, 2026, 07_15_55 PM (1).png` | Source rights not verified; reference use only | No | Unclear | N/A while unshipped | None | N/A | Not copied into repository; hash not recorded | N/A | 2026-07-23 | Codex / `REFERENCE ONLY` | No |
+| `REF-ARENA-001` | `ChatGPT Image Jul 23, 2026, 07_15_55 PM (1).png`; image | Coliseum composition and mood reference | User-provided generated image | `C:\Users\Ivan\Downloads\ChatGPT Image Jul 23, 2026, 07_15_55 PM (1).png` | Source rights not verified; reference use only | No | Unclear | N/A while unshipped | None | N/A | Not copied into repository; hash not recorded | N/A | 2026-07-23 | Codex (an AI agent — see Q-023) / `REFERENCE ONLY` | No |
+| `TOOL-001` | Moon Animator 2; Studio plugin | Primary combat animation authoring | xSIXx / Team Moon | Creator Store asset `4725618216` | Paid plugin licence; terms not yet read | Unreviewed | Unreviewed | Unreviewed | **Not approved.** Reported ~1,700 Robux, price unverified. Needs the full cost gate before purchase | None | N/A | N/A | Not obtained | Unassigned / `HOLD` | No |
+| `TOOL-002` | Roblox Animations Importer/Exporter; Blender add-on plus Studio plugin | Free animation bridge and fallback to Moon Animator | Cautioned | `github.com/Cautioned/Blender-Animations-Plugin` | GPL-3.0 | Stated yes; terms not yet read in full | Yes under GPL-3.0 | Per GPL-3.0; requirement not yet confirmed | Free | N/A | N/A | N/A | Not obtained | Unassigned / `RESEARCH` | No |
+| `TOOL-003` | Beziers; VFX plugin and asset library | Modular VFX authoring | coroutine_yieId | DevForum thread `4180222` | Paid | Unreviewed | Unreviewed | Unreviewed | **Not approved.** Deferred past M4 | None | N/A | N/A | Not obtained | Unassigned / `HOLD` | No |
 
 Add one row per asset. Do not combine a model, its third-party textures, and its embedded audio into one entry when their creators or licenses differ.
+
+The `TOOL-*` rows above are recorded as `HOLD` and `RESEARCH` so the research in [TOOLING_AND_PIPELINE.md](TOOLING_AND_PIPELINE.md) cannot be mistaken for approval. Per the rule above, `unclear` is `HOLD`.
+
+**Warning on Moon Animator.** Several Creator Store listings named "Free Moon Animator 2", and several GitHub mirrors, are reuploads or cracks. Using one on a commercial project is both a licensing and a supply-chain risk, and would fail the "a marketplace listing does not prove its uploader owns the work" rule above.
+
+The pinned code toolchain in `rokit.toml` (Rojo, Wally, StyLua, Selene, luau-lsp) is free and open source and installs outside the Roblox place, so it is recorded in D-018 rather than here. Any **Wally package** that ships inside the place does need a row.
 
 ## Per-asset review checklist
 
@@ -65,6 +74,8 @@ Add one row per asset. Do not combine a model, its third-party textures, and its
 - [ ] Internal owner, Roblox asset ID, source file, and reimport path recorded.
 - [ ] Performance and visual-quality acceptance passed.
 - [ ] Final status set by a named reviewer.
+
+**Q-023 is open on what "named reviewer" means.** The only pre-existing row records "Codex", an AI agent, as its reviewer. The recommended answer is that an agent may prepare and research a row but a human names themselves on the final status, because the reviewer field exists to record accountability for a rights decision. Until Q-023 is resolved, treat any agent-signed row as `RESEARCH` rather than reviewed.
 
 ## Related documents
 

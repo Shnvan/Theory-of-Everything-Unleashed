@@ -25,7 +25,7 @@ Gravity Sovereign should teach the universal combat system without being weak at
 - Motion: white or cyan vector trails.
 - Optics: prismatic spectral accents.
 - Silhouette: readable scholar-superhero, not a photorealistic historical reconstruction.
-- Effects must remain legible on a phone screen and against the graybox arena.
+- Effects must remain legible on a phone screen and against the Coliseum's marble, dark stone, and brass palette.
 
 ## Scope A implementation
 

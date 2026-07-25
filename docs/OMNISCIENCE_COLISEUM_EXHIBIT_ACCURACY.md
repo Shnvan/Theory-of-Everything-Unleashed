@@ -56,9 +56,15 @@ The visible name stone must use the real name below. The smaller factual card su
 | Gravity & Spaceflight | Gravity-control chamber | **CAVENDISH TORSION BALANCE** | Historical/scientific reconstruction | A documented torsion-balance gravity experiment; never described as controlling gravity |
 | Gravity & Spaceflight | Rocket launch display | **APOLLO 4 SATURN V AND LAUNCH UMBILICAL TOWER** | Named replica | Saturn V vehicle `SA-501`, its Mobile Launcher, and Launch Umbilical Tower at a disclosed uniform display scale |
 | Gravity & Spaceflight | Black-hole generator | **BLACK-HOLE ACCRETION-DISK VISUALIZATION** | Scientific visualization | NASA-reviewed event-horizon, accretion-disk, photon-ring, and lensing references; never described as generating a black hole |
-| Hall of Minds | Scientist statues | **GALILEO GALILEI · ADA LOVELACE · MARIE CURIE** | Historical portrayals | Original sculptures informed by separately cleared public-domain or openly licensed portraits; no museum endorsement |
+| Hall of Minds | Scientist statues | **GALILEO GALILEI · ADA LOVELACE · MARIE CURIE** — the Curie statue is **BLOCKED on Q-021** | Historical portrayals | Original sculptures informed by separately cleared public-domain or openly licensed portraits; no museum endorsement |
 | Hall of Minds | Floating equations and formulas | **FOUNDATIONAL EQUATIONS OF PHYSICS** | Verified educational display | Gravity, electromagnetism, relativity, quantum mechanics, and orbital equations with symbol definitions and independent technical review |
 | Hall of Minds | Invention museum cases | **LANDMARK INVENTIONS COLLECTION** | Miniature replica collection | A Gutenberg-type press, Pascaline, Faraday disk, and 1903 Wright Flyer, each with its own source and scale record |
+
+### Conflict: the Curie statue and Radiant Pioneer
+
+A named Marie Curie monument standing in the arena where **Radiant Pioneer** — the radiant-fields-and-decay original character — fights invites exactly the association [CHARACTER_ROSTER.md](CHARACTER_ROSTER.md) and [IP_CONTENT_SAFETY.md](IP_CONTENT_SAFETY.md) forbid, and it fails this project's own test: "If five unprompted testers immediately name the same modern person, treat the character as identifiable and redesign."
+
+Do not model the Hall of Minds statues until **Q-021** is resolved. Options are to substitute a different figure, drop the statue, or retheme Radiant Pioneer. Raised as S4 in [PROJECT_AUDIT_2026-07-25.md](PROJECT_AUDIT_2026-07-25.md).
 
 ## Factual museum card
 

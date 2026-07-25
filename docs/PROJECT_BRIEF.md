@@ -100,7 +100,7 @@ There are no formal rounds in the primary mode.
 
 ## Product test
 
-The concept is worth expanding only if the graybox version creates the response:
+The concept is worth expanding only if the prototype creates the response:
 
 > “Let me fight again,”
 

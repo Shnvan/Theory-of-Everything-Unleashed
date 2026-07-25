@@ -12,7 +12,8 @@ docs/DECISION_LOG.md, TASKS.md, and the domain document relevant to my request.
 
 The current game is an eight-player continuous public FFA battleground, not the
 older PvE roguelite or ranked 1v1 idea. The current milestone is the universal
-combat foundation and a Gravity Sovereign vertical slice in one graybox arena.
+combat foundation and a Gravity Sovereign vertical slice in one arena, The
+Omniscience Coliseum, which is already built and validated.
 
 Treat LOCKED decisions as approved direction, DEFAULT values as tunable, DRAFT
 ideas as unapproved, OPEN questions as unresolved, and OUT items as outside the
@@ -66,7 +67,7 @@ Build the entire battleground game.
 An LLM editing local files does not automatically know:
 
 - Which Instances currently exist in Studio.
-- Whether Script Sync is active.
+- Whether Rojo is connected and syncing.
 - Whether animations or assets are uploaded.
 - What Output or Script Analysis reports.
 - Whether a multiplayer or mobile test passed.

@@ -6,16 +6,20 @@ Build the experience in **Roblox Studio**, while editing synchronized Luau and p
 
 The external IDE does not replace Studio. Roblox Studio is still required to create the place, arrange Instances, animate, test Roblox engine behavior, emulate devices, run clients and servers, upload assets, and publish.
 
-## Recommended initial tools
+## Required tools
 
-- Latest Roblox Studio.
+Versions are pinned in `rokit.toml`. Run `rokit install` from the repository root; see [TOOLING_AND_PIPELINE.md](TOOLING_AND_PIPELINE.md) for what each one is for.
+
+- Latest Roblox Studio, plus the **Rojo Studio plugin**.
 - VS Code, Cursor, or another editor that can open a folder.
-- Luau language-server extension.
+- The `luau-lsp` extension, plus its Studio companion plugin — without the plugin, Studio-owned instances are untyped.
 - Git.
-- Roblox Script Sync.
+- [Rokit](https://github.com/rojo-rbx/rokit), which installs Rojo, Wally, StyLua, Selene, and luau-lsp at pinned versions.
 - Optional: Roblox Studio MCP for a trusted compatible AI client.
 
-Do not add Rojo, Wally, a large framework, or build automation during M0 unless a specific blocker requires it.
+Copy `.vscode/settings.json.example` to `.vscode/settings.json`. The real file is gitignored, so the example is the committed record; previously the only editor configuration in existence sat in an untracked file **outside** the repository root and was unreproducible.
+
+D-018 supersedes the earlier instruction not to add Rojo or Wally. Frameworks and build automation beyond the static gates are still out of scope without a concrete need.
 
 ## One-time Studio setup
 
@@ -39,25 +43,32 @@ StarterPlayer
 1. Do not place parts, models, remotes with attributes, UI Instances, sounds, or other non-script assets inside the three synced folders.
 1. Save or publish the private place.
 
-## Configure Script Sync
+## Configure Rojo
 
-For each code folder:
+`default.project.json` already declares the mapping, so there is nothing to configure per folder:
 
-1. Right-click the folder in Studio.
-1. Select **Sync to…**.
-1. Map it to:
-
-| Studio folder | Local folder |
+| Studio location | Local folder |
 |---|---|
 | `ReplicatedStorage/GameShared` | `src/shared` |
 | `ServerScriptService/GameServer` | `src/server` |
 | `StarterPlayer/StarterPlayerScripts/GameClient` | `src/client` |
 
-1. Open the repository root, not only `src`, in the IDE. This makes the Markdown context visible to LLM tools.
-1. Create a small test ModuleScript in one synced folder and verify a harmless edit moves both directions.
-1. Remove the test script after the sync check.
+Note that the `GameShared`, `GameServer`, and `GameClient` names come from the mapping, not from folders on disk. Files live directly at `src/client/...`.
 
-Script Sync supports scripts, ModuleScripts, LocalScripts, and folders. It does not preserve script attributes or tags. Keep those out of synced scripts during this workflow.
+Steps:
+
+1. **Publish the private place first.** The arena exists only in Studio and `*.rbxl` is gitignored, so the cloud version is the sole backup.
+2. Open the repository root, not only `src`, in the IDE. This makes the Markdown context visible to LLM tools.
+3. Run `rojo serve` from the repository root.
+4. In Studio, open the Rojo plugin and connect.
+5. Confirm the three folders appear where Script Sync previously put them, with **no** double nesting such as `GameClient/GameClient`, and with no Studio-side instances lost.
+6. Edit a comment in one file and confirm it reaches Studio.
+
+**`rojo build` is not a deployment path.** The project file declares only the three code folders, so its output contains none of the arena. It exists to prove the project file resolves and every file parses. Never publish it over the real place.
+
+### Script Sync as fallback
+
+Script Sync still works and the folder mapping is identical, via right-click → **Sync to…** on each folder. It does not preserve script attributes or tags. Use it if the Rojo plugin is unavailable; do not run both at once.
 
 ## Source-of-truth policy
 
@@ -83,18 +94,20 @@ Never choose “Keep Disk” or “Keep Studio” reflexively for a large confli
 
 ## Daily development loop
 
-1. Pull or inspect the current Git state.
-2. Open the private prototype in Studio.
-3. Confirm Script Sync is active.
+1. Run `git status`. **Untracked work is not saved work** — this project nearly lost its only implementation that way.
+2. Open the private prototype in Studio and start `rojo serve`.
+3. Confirm the Rojo plugin is connected.
 4. Read `TASKS.md` and choose one acceptance condition.
 5. Edit Luau in the IDE.
-6. Observe Output and Script Analysis in Studio.
-7. Run the smallest relevant test.
-8. Run server and two clients for any networked combat change.
-9. Run device emulation for any input or HUD change.
-10. Update the task and affected document.
-11. Commit a focused working change.
-12. Publish the private prototype at a stable checkpoint.
+6. Run the static gates: `stylua --check src`, `selene src`, `luau-lsp analyze`.
+7. Observe Output and Script Analysis in Studio.
+8. Run the smallest relevant test.
+9. Run server and two clients for any networked combat change.
+10. Run device emulation for any input or HUD change.
+11. Update the task and affected document — the task only if acceptance passed.
+12. Commit a focused working change.
+13. Publish the private prototype at a stable checkpoint, with a version note.
+14. Write a [session handoff](templates/SESSION_HANDOFF.md).
 
 ## Testing modes
 
@@ -145,25 +158,22 @@ Use it only when:
 
 In Studio, open **Assistant Settings → MCP Servers → Quick connect**, then enable the installed supported client. If no MCP connection is present, an LLM sees only local files; give it the relevant Explorer tree and Output errors rather than letting it invent Studio Instances.
 
-## When to consider Rojo
+## Why Rojo, and what did not change
 
-Re-evaluate a file-system-first workflow only if at least one becomes true:
+D-018 adopted Rojo on 2026-07-25, superseding D-010. Two of the five re-evaluation triggers this document already listed had been met: **CI needs reproducible place generation**, and every combat library the project will want — ShapecastHitbox, Trove, Blink — ships on Wally, which requires a project file.
+
+What deliberately did **not** change: the project file declares only the three code folders, so Studio keeps ownership of the place, arena, GUI, rigs, animation, VFX instances, and audio. The source-of-truth table above is unchanged. This was a change of sync mechanism, not of the data-model philosophy.
+
+The remaining triggers from the original list are still worth watching, since they would push toward representing more of the data model as files:
 
 - More than one developer needs reviewable full data-model changes.
-- The team wants most Instances represented as files.
-- Automated place builds are required.
-- Script Sync limitations repeatedly block necessary organization.
-- CI needs reproducible place generation.
+- Most Instances should be represented as files.
 
-Do not migrate merely because Rojo is common. A migration changes the source-of-truth model and deserves its own decision.
+That would be a further decision, not an extension of D-018.
 
-## Git baseline
+## Git
 
-After Script Sync creates `src`, make a first baseline commit containing:
-
-- This documentation pack.
-- The three synced source trees.
-- No credentials, cookies, local Studio settings, or secret keys.
+Never commit credentials, cookies, local Studio settings, or secret keys. Commit rules are in [DEVELOPER_RULES.md](DEVELOPER_RULES.md).
 
 Use small commits such as:
 
@@ -172,9 +182,12 @@ Use small commits such as:
 - `feat: validate basic attack requests`
 - `fix: clear ragdoll force on respawn`
 
+If the change is Studio-side, say so in the commit body — the diff will not show it. Four commits in this project's history are labelled `feat:` and contain no code for exactly that reason.
+
 ## Official references
 
-- [Script Sync](https://create.roblox.com/docs/scripting/sync)
+- [Rojo](https://rojo.space/docs/v7/) and [Rokit](https://github.com/rojo-rbx/rokit)
+- [Script Sync](https://create.roblox.com/docs/scripting/sync), the fallback path
 - [Studio MCP server](https://create.roblox.com/docs/studio/mcp)
 - [Studio testing modes](https://create.roblox.com/docs/studio/testing-modes)
 - [Luau type checking](https://create.roblox.com/docs/luau/type-checking)

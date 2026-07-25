@@ -6,7 +6,7 @@ The schedule is gate-based. Available hours do not justify advancing when the cu
 
 | Week | Goal | Required evidence |
 |---|---|---|
-| 1 | Tool setup, graybox, input, combat state, dummy, health, death, respawn | IDE-to-Studio sync works; no stuck lifecycle states in repeated solo tests |
+| 1 | Tool setup, arena, input, combat state, dummy, health, death, respawn | IDE-to-Studio sync works; no stuck lifecycle states in repeated solo tests |
 | 2 | Four-hit M1, hit validation, block, dash, hitstun, knockback, ragdoll, escape | Two clients can complete repeated attack/block/KO loops |
 | 3 | Gravity Well, cooldown, meter foundation, KO/assist, session leaderboard, touch UI | Ability is server-validated and stable under two and eight clients |
 | 4 | External playtests, mobile and performance pass, iteration, go/no-go review | Testers understand, re-engage, and identify combat—not art—as the reason to continue |
@@ -93,23 +93,7 @@ These are prototype gates, not public-retention claims.
 
 ## Playtest note template
 
-```markdown
-### Playtest YYYY-MM-DD
-
-- Build/commit:
-- Studio mode and client count:
-- Devices:
-- Testers:
-- Task being tested:
-- What happened:
-- Repeated confusion:
-- Best moment:
-- Unfair moment:
-- P0/P1 issues:
-- Metrics:
-- Decision:
-- Next change:
-```
+The canonical template is [templates/PLAYTEST_NOTE.md](templates/PLAYTEST_NOTE.md), which merges this document's earlier version with the one in [ROBLOX_GAME_DEVELOPMENT_PLAYBOOK.md](ROBLOX_GAME_DEVELOPMENT_PLAYBOOK.md). Two differing templates previously existed with no statement of which to use.
 
 ## Public-alpha gate
 

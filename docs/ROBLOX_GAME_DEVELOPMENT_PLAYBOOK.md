@@ -191,24 +191,14 @@ Review risks before choosing the next prototype and at every milestone gate. Ret
 
 ### Playtest note
 
-```markdown
-## Playtest YYYY-MM-DD
-
-- Build, place version, and commit:
-- Hypothesis and acceptance threshold:
-- Players, devices, input types, and client count:
-- Instructions given:
-- Observed behavior:
-- Time-to-first-fun or task completion:
-- Confusion and failure points:
-- Best and worst moments:
-- Technical errors and performance:
-- P0/P1 issues:
-- Evidence-supported decision:
-- Next smallest change:
-```
+Canonical template: [templates/PLAYTEST_NOTE.md](templates/PLAYTEST_NOTE.md).
 
 Ask players to demonstrate and explain. Do not replace observation with leading questions about whether the concept "could be good."
+
+### Other templates
+
+- Move, ability, or mechanic design: [templates/MOVE_SPEC.md](templates/MOVE_SPEC.md).
+- End-of-session handoff: [templates/SESSION_HANDOFF.md](templates/SESSION_HANDOFF.md).
 
 ### Release and rollback record
 
@@ -357,7 +347,9 @@ This section applies the playbook without changing any LOCKED direction or curre
 7. Use playtest evidence to tune DEFAULT values; obtain approval before changing LOCKED decisions.
 8. At the Scope A gate, decide whether to iterate, continue, or stop based on player behavior and defect evidence.
 
-For the next task, input mapping, the feature brief must cover keyboard/mouse and touch, action reachability, held and rapid input, simultaneous actions, mobile safe areas, character lifecycle, and the later dash/block/action interfaces. Implementation must remain narrow enough that the shared combat-state task can follow without being silently built inside the input layer.
+Input mapping is now implemented and committed, with acceptance still pending Studio verification. The next task is the shared combat state machine, which consumes `CombatTypes.STATE_PRIORITY` and should be written as pure functions so its transition table can be unit tested without the engine.
+
+The competency map above is generic. For which of its rows this project's solo developer must personally hold, defer, or eventually buy, see [TEAM_AND_SKILLS.md](TEAM_AND_SKILLS.md). For the current findings and the populated risk register, see [PROJECT_AUDIT_2026-07-25.md](PROJECT_AUDIT_2026-07-25.md).
 
 ## Release readiness checklist
 
