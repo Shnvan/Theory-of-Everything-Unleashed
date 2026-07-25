@@ -106,3 +106,19 @@ Scale Unit **Stud**, Scale Factor **1**, Anchored **on**, Collision Fidelity **B
 **Retune, 2026-07-26.** Research produced the real dimensions, exposing a **1.15:1 proportion where the object is 1.67:1** — it read as a ball rather than a tall upright instrument. Rebuilt to the real ratio with claw feet, a differentiated zodiac band, and a proper globe.
 
 The new ratio assert caught a further bug immediately: `join()` merges into `parts[0]`, the meridian ring, which carries a 90° rotation, so the merged object's local axes were swapped and `dimensions` reported height as Y. The geometry was right and the measurement was wrong. The generator now bakes the rotation in before measuring.
+
+### Retune placement, verified
+
+Re-imported at **Scale Factor 1** and measured `38.115, 62.948, 38.115` — an exact match, confirming the 1:1 authoring fix. The part arrived named `GiantArmillarySphere` rather than `Torus`, confirming the mesh-data naming fix. Both first-import bugs are dead.
+
+Placed at 148.12, **39.636**, 164.50 — seated on the plinth top at Y 8.16 rather than centred on the old ring centre, because this object stands on feet.
+
+| Check | Result |
+|---|---|
+| Axis-aligned footprint | Unchanged, delta 0.0000 on every axis |
+| Envelope | Spans Y 8.16–71.11 against a 71.16 limit |
+| Colliders in exhibit | Exactly 1, `PrimaryCollisionShell` |
+| Preserved children | `CollisionShells`, `Plinth`, `LabelAnchor`, `NamePlaque` intact |
+| In-world ratio | 1.652 |
+
+Visually it now reads as a tall upright instrument on claw feet rather than a ball, and the wide zodiac band gives the ring set a legible hierarchy. The upper rings still cross busily; whether that is wrong is a question for reference photography, since real armillary spheres are genuinely dense with rings.
