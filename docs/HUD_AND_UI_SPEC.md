@@ -74,12 +74,12 @@ Each icon lives in an `ImageLabel` named `Icon`, a child of its button. Ledger r
 |---|---|---|---|
 | `BasicAttackButton` | Fist | `lorc/punch` | `85239036663948` |
 | `BlockButton` | Shield | `sbed/shield` | `94413571867350` |
-| `DashButton` | Forward burst | `delapouite/fast-forward-button` | `80510587140014` |
+| `DashButton` | Running figure | `lorc/sprint` | `87301382738025` |
 | `MechanicButton` | Vortex | `lorc/vortex` | `133264139799883` |
 | `BreakthroughButton` | Light bulb | `lorc/light-bulb` | `105324694393567` |
 | `Ability1–4Button` | Numerals `1` `2` `3` `4`, the button's own `Text` | — | — |
 
-Why a forward burst for Dash rather than a directional arrow: the button does **not** choose a direction. [COMBAT_SYSTEM.md](COMBAT_SYSTEM.md) defines dash as button *plus movement input*, so the stick supplies direction and the icon should promise speed, not a compass. An earlier four-way arrow (`delapouite/move`) was replaced for exactly this reason under D-028.
+Why a running figure for Dash: it promises speed without asserting a direction, which is correct because the button does **not** choose one — [COMBAT_SYSTEM.md](COMBAT_SYSTEM.md) defines dash as button *plus movement input*, so the stick supplies direction. It also matches the metaphor genre reference layouts use for the same slot. Two earlier icons were rejected: a four-way arrow (`delapouite/move`) implied the button picked a compass direction, and a forward burst (`delapouite/fast-forward-button`) read as a media control.
 
 Why a bulb for Breakthrough: every available lightning icon was a busy shard cluster unreadable at 64px, and the meter that gates it is literally called Discovery. That is the one place theme-fit beat strict convention.
 
@@ -126,32 +126,38 @@ Use `GuiService:GetGuiInset()` and a `ScreenInsets` setting of `DeviceSafeInsets
 
 The arrangement follows the genre standard: **a numbered ability row across the bottom-centre, and the combat actions in a staggered two-column arc on the right.** Positions as `Scale` within `TouchControls`.
 
-| Button | x | y | Column |
-|---|---:|---:|---|
-| `BasicAttackButton` | 0.750 | 0.760 | inner — nearest the thumb rest |
-| `BlockButton` | 0.900 | 0.620 | outer |
-| `DashButton` | 0.750 | 0.460 | inner |
-| `MechanicButton` | 0.900 | 0.340 | outer |
-| `BreakthroughButton` | 0.750 | 0.190 | inner |
-| `Ability1Button` | 0.365 | 0.850 | bottom-centre row |
-| `Ability2Button` | 0.455 | 0.850 | " |
-| `Ability3Button` | 0.545 | 0.850 | " |
-| `Ability4Button` | 0.635 | 0.850 | " |
+| Button | x | y | Column | Size |
+|---|---:|---:|---|---:|
+| `BreakthroughButton` | 0.750 | 0.280 | inner | 0.070 |
+| `BlockButton` | 0.750 | 0.536 | inner | 0.115 |
+| `BasicAttackButton` | 0.750 | 0.850 | inner — nearest the thumb rest | 0.115 |
+| `MechanicButton` | 0.900 | 0.307 | outer | 0.070 |
+| `DashButton` | 0.900 | 0.543 | outer | 0.070 |
+| `Ability1Button` | 0.389 | 0.893 | bottom-centre row | 0.070 |
+| `Ability2Button` | 0.474 | 0.893 | " | 0.070 |
+| `Ability3Button` | 0.558 | 0.893 | " | 0.070 |
+| `Ability4Button` | 0.643 | 0.893 | " | 0.070 |
 
-**The arc is ordered by reachability, nearest the thumb first:** Attack, Block, Dash, Mechanic, Breakthrough. Reference layouts in this genre often place block at the *top* of the arc; that is not copied, because the rule above requires block to be among the most reachable — it is a reactive hold and mispressing it is the most punishing miss in the game. Do not "correct" this back.
+**Attack and Block are the two large buttons and both sit inner**, where the thumb rests; the smaller utilities sit outer, above the jump button. Sizes are `Scale` of `TouchControls` width.
 
 **The entire left half is free of combat controls** (D-028). The left thumb steers and does nothing else.
 
 ### Geometry check
 
-**Validate against live rendered geometry, not arithmetic.** Two separate rounds of hand-placement produced measured defects, and one round of *correct* arithmetic still produced three, because the arithmetic used wrong inputs. Read `AbsolutePosition` and `AbsoluteSize` from a running client with device emulation on, then check:
+**Validate against live rendered geometry and measured obstacles — never against arithmetic or guessed zones.** Three separate rounds produced measured defects, each time because a number was assumed rather than observed. Read `AbsolutePosition` and `AbsoluteSize` from a running client with device emulation on, then check:
 
 - every button pair for an edge gap `< 8px`
-- every box against the four reserved zones, **measured against the viewport**
+- every box against **Roblox's real touch controls**, read from `PlayerGui.TouchGui.TouchControlFrame`:
+  - `JumpButton` — a hard failure. At a 685×338 viewport it measured **x 590–660, y 190–260**
+  - `DynamicThumbstickFrame` — a soft warning; it is the *potential* stick area and is generously sized (**x −100–274**), so the ability row unavoidably clips it, as reference layouts also do
 - every button against the 44pt tappable floor
 - anything outside the screen
 
-Two traps this has already caught, both invisible to inspection:
+`TouchGui` is created lazily and may be absent early in a play session. If it is missing, the jump check has **not run** — say so rather than reporting a pass.
+
+Three traps this has already caught, all invisible to inspection:
+
+0. **The jump button is not where a guessed "bottom-right corner" zone puts it.** A guessed reserve of `x>0.82, y>0.75` put its top edge 63px below the real one, and Block overlapped the jump button in shipped layout as a result. Measure the instance.
 
 1. **`TouchControls` is shorter than the viewport.** At a 685×338 viewport it is 685×**280** — `ScreenInsets = CoreUISafeInsets` takes the difference. Y positions are scale of *that*, so validating vertical gaps against viewport height overstates every one of them by around 20%.
 2. **`UIAspectRatioConstraint.AspectType` must be `ScaleWithParentSize`.** The default, `FitWithinMaxSize`, fits the square inside the element's own `Size` box — and since `Size.Y` is `{0,0}` that box has no height, so the button collapses and `UISizeConstraint.MinSize` becomes the only thing giving it a size. Every button silently rendered at its floor, and would never have grown on a larger screen.
