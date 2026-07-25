@@ -28,6 +28,24 @@ roblox.yml
 globalTypes.d.luau
 build/
 
-# Model exports; art source will live under art/ with Git LFS after M4
+# Model exports
 *.rbxm
 *.rbxmx
+
+# Third-party tooling fetched locally, not vendored. The Blender MCP addon is
+# 122KB of someone else's code under a licence this project has not reviewed;
+# pinning it by URL and SHA256 in ASSET_PROVENANCE_LEDGER.md is reproducible
+# without taking on responsibility for reviewing and maintaining it.
+tools/blender/
+
+# Exhibit art. The committed source is art/exhibits/*/generate.py -- a script,
+# not a binary -- so exported meshes are build output and stay out of git. This
+# is only safe because the generators are deterministic: byte-identical output
+# across runs, which is checked. See art/README.md.
+#
+# Hand-sculpted exhibits that cannot be generated will need committed .blend
+# files under Git LFS. None exist yet.
+*.glb
+*.gltf
+*.blend
+*.blend[0-9]

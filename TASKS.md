@@ -91,12 +91,15 @@ Added 2026-07-25 after the audit in [docs/PROJECT_AUDIT_2026-07-25.md](docs/PROJ
 - [ ] Record tester observations and metrics from `docs/ROADMAP_AND_TESTING.md`.
 - [ ] Decide: iterate combat, continue to the full Gravity Sovereign kit, or stop/pivot.
 
-## Post-M4 — Museum-Accurate Coliseum Production
+## Museum-Accurate Coliseum Production
 
-**Deferred:** do not begin this section unless M4 passes and the continuation decision authorizes production art.
+**Started 2026-07-26 by user direction (D-033), ahead of the M4 gate D-017 originally required.** The combat foundation is still unfinished; this section runs alongside M1 rather than after M4.
 
-- [ ] Complete and approve research dossiers for all 24 exhibits using the real names and accuracy classes in `docs/OMNISCIENCE_COLISEUM_EXHIBIT_ACCURACY.md`.
-- [ ] Resolve Q-014 and record target-device geometry, texture, draw, memory, streaming, and frame-time budgets. **This blocks the rest of this section and is cheap to close; do it early rather than in sequence.**
+- [x] Establish the art pipeline: Blender headless driven by committed Python generator scripts, GLB export, `art/` tree (D-034). *Verified deterministic — two runs produce byte-identical output.*
+- [x] Resolve Q-014 and record target-device budgets (D-035). *≤500,000 triangles and ≤1,000 draw calls arena-wide, ≤20,000 per mesh, ≤1024×1024 textures. Baseline measured: 1,949 parts, 2,455 instances, 74,238 triangles, 25 draw calls.*
+- [x] Build the armillary sphere pilot generator. *8,884 triangles, 45.62 × 52.49 × 45.62 studs, replaces 71 primitive parts with one mesh.*
+- [ ] **NEEDS STUDIO.** Import the armillary sphere GLB via the 3D Importer and verify size, then replace the prototype geometry.
+- [ ] Complete and approve research dossiers for all 24 exhibits using the real names and accuracy classes in `docs/OMNISCIENCE_COLISEUM_EXHIBIT_ACCURACY.md`. *Armillary sphere dossier started and explicitly marked INCOMPLETE — no corroborating source, proportions unverified against object `1878-12`.*
 - [ ] Resolve Q-021 before modelling the Hall of Minds: decide whether a named Marie Curie statue can coexist with the Radiant Pioneer identifiability rule.
 - [ ] Resolve Q-018: lock the Prague Astronomical Clock restoration era before modelling it.
 - [ ] Approve provenance for every external reference and asset; obtain separate advance approval for every non-zero cost.
