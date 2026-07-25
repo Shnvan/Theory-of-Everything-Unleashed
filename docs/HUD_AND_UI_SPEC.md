@@ -4,7 +4,9 @@
 
 **Why this document exists.** `src/shared/Config/InputConfig.luau` resolves ten touch buttons by exact name inside the Studio place. Those names were previously written nowhere but in the code. Because [STUDIO_IDE_WORKFLOW.md](STUDIO_IDE_WORKFLOW.md) bars non-script instances from synced folders, the GUI cannot be checked into git as instances — so the only place the contract can live is a document. Rename or delete any instance below and mobile input degrades to `warn()` lines at runtime with no compile-time signal at all. Recorded as D-022.
 
-> **NEEDS STUDIO.** The tree below is the contract the code expects. It has not been verified against the live place in this session. On the next Studio session, compare them and correct whichever side is wrong — then note here that it was verified and on what date.
+> **VERIFIED 2026-07-25.** The tree below was compared against the live private prototype place over Studio MCP and matches exactly: `GameHUD` is a `ScreenGui` under `StarterGui`, `TouchControls` is a `Frame` under it, and all ten buttons are `TextButton` direct children with the exact names below. Neither side needed correction. The place additionally carries per-button `UICorner`/`UIStroke`/`UITextSizeConstraint` styling children and two `GameHUD` attributes (`TouchButtonCount = 10`, `InputLayoutRevision = "M1InputMappingV1"`); none participate in the lookup, and this document does not govern them.
+>
+> Re-verify if the HUD is rebuilt. What this check does **not** cover is runtime: the place has not been played since the M0.5 input fixes, so no `InputController` warning path has actually executed.
 
 ---
 
@@ -40,6 +42,57 @@ Contract rules:
 
 ---
 
+## Visual language
+
+**Status:** the achromatic-and-wordless rule is LOCKED by **D-026**. The specific glyph shapes below are DEFAULT and expected to change through device testing.
+
+The control layer is black-and-white with **one** exception. Colour in this project means something — [DESIGN_PHILOSOPHY.md](DESIGN_PHILOSOPHY.md) assigns it to the character, ability VFX, and world feedback — so the HUD stays out of that channel and never competes with the reserved warning treatment for incoming danger, which the feedback hierarchy ranks above the player's own resources.
+
+| Element | Treatment |
+|---|---|
+| Button fill | Near-black, `BackgroundTransparency ≈ 0.3` so the arena reads through |
+| Ring | White `UIStroke`, thin, `Transparency ≈ 0.15` |
+| Icon | White source art, tinted through `ImageColor3` |
+| Silhouette | Circle for all ten (`UICorner` 0.5) |
+
+**The one permitted accent** means exactly one thing: *ready / available* — Breakthrough at full meter, an ability off cooldown. It is applied by tinting an icon's `ImageColor3`, which is why the source art is white: a white image can be tinted to any colour, a coloured one cannot. It must never be used decoratively, and never in the danger channel's hue.
+
+> **Not yet driven.** All icons currently render white because no server-side meter or cooldown state exists to drive readiness. The channel is built; the signal is M3.
+
+Icon, size tier, and screen position carry every remaining distinction, so nothing critical rides on colour alone — which satisfies the accessibility rule below rather than straining it.
+
+### Icon set
+
+Conventional pictograms, not invented shapes. The metaphors below were chosen because research across TSB, Jujutsu Shenanigans, Untitled Boxing Game, Blox Fruits, Deepwoken, Rivals, Genshin, Honkai Star Rail, Diablo Immortal, and COD Mobile found them shared across *many* games. Adopting shared vocabulary is safe; reproducing one game's layout or artwork is not, and [PROJECT_BRIEF.md](PROJECT_BRIEF.md) forbids it by name.
+
+Each icon lives in an `ImageLabel` named `Icon`, a child of its button. Ledger rows `UI-ICON-001`…`006` in [ASSET_PROVENANCE_LEDGER.md](ASSET_PROVENANCE_LEDGER.md); recorded as D-027.
+
+| Button | Icon | Source | Asset ID |
+|---|---|---|---|
+| `BasicAttackButton` | Fist | `lorc/punch` | `85239036663948` |
+| `BlockButton` | Shield | `sbed/shield` | `94413571867350` |
+| `DashButton` | Four-way directional arrow | `delapouite/move` | `89977891032744` |
+| `SprintButton` | Running figure | `lorc/sprint` | `87301382738025` |
+| `MechanicButton` | Vortex | `lorc/vortex` | `133264139799883` |
+| `BreakthroughButton` | Light bulb | `lorc/light-bulb` | `105324694393567` |
+| `Ability1–4Button` | Numerals `1` `2` `3` `4`, the button's own `Text` | — | — |
+
+Why a four-way arrow for Dash: [COMBAT_SYSTEM.md](COMBAT_SYSTEM.md) defines dash as **directional** — button plus movement input — so the metaphor is literal rather than decorative. Why a bulb for Breakthrough: every available lightning icon was a busy shard cluster unreadable at 64px, and the meter that gates it is literally called Discovery. That is the one place theme-fit beat strict convention.
+
+Numerals are permitted; **word labels are not**. A numeral carries information an icon cannot — which slot, how many seconds remain. `ATK`, `BLOCK`, `RUN`, `DASH`, `BREAK`, and `R` carried none the icon does not.
+
+> **Every icon child must have `Active = false` and `Selectable = false`.** An active child GuiObject sinks the pointer input that `button.InputBegan` depends on, and the button silently stops responding to touch. Verify this after any HUD edit.
+
+### Size tiers
+
+| Tier | Buttons | Size (scale of X) |
+|---|---|---|
+| Primary | `BasicAttack`, `Block` — equal | ~0.115 |
+| Secondary | `Dash`, `Mechanic`, `Breakthrough`, `Sprint` | ~0.085 |
+| Ability | `Ability1–4` | ~0.075 |
+
+---
+
 ## Layout
 
 Target viewport for the prototype is the one already recorded in [OMNISCIENCE_COLISEUM.md](OMNISCIENCE_COLISEUM.md): **750 × 361**, iPhone 17 Pro landscape. That is the smallest supported case until Q-014 sets a real device floor.
@@ -63,8 +116,38 @@ Use `GuiService:GetGuiInset()` and a `ScreenInsets` setting of `DeviceSafeInsets
 
 - **Combat buttons cluster on the right**, above and inboard of the jump button, reachable by the right thumb without covering the character.
 - **Sprint sits near the left thumb**, because it is a movement modifier used while steering — not with the combat cluster.
-- **Block is the largest and most reachable** combat button. It is held, used reactively, and mispressing it is the most punishing miss.
+- **Block and Basic Attack are the joint-largest and most reachable.** Block is held, used reactively, and mispressing it is the most punishing miss. *(This previously read "Block is the largest" while the Sizes table below said "equal to basic attack" — the two contradicted each other. Joint-largest is the reconciled rule.)*
 - Breakthrough is visually distinct and **only interactive at full meter**. It is not hidden when unavailable, because players need to learn it exists.
+
+Positions as `Scale` within `TouchControls`. DEFAULT — retune from device testing, but **re-run the geometry check afterwards**; these values were computed and machine-validated, not eyeballed.
+
+| Button | x | y | Shares column with |
+|---|---:|---:|---|
+| `Ability1Button` | 0.545 | 0.270 | — |
+| `Ability2Button` | 0.635 | 0.270 | `BreakthroughButton` |
+| `Ability3Button` | 0.725 | 0.270 | — |
+| `Ability4Button` | 0.815 | 0.270 | — |
+| `BreakthroughButton` | 0.635 | 0.560 | `Ability2Button` |
+| `MechanicButton` | 0.755 | 0.470 | `BlockButton` |
+| `BlockButton` | 0.755 | 0.710 | `MechanicButton` |
+| `DashButton` | 0.900 | 0.360 | `BasicAttackButton` |
+| `BasicAttackButton` | 0.900 | 0.600 | `DashButton` |
+| `SprintButton` | **0.115** | 0.430 | — |
+
+Buttons snap onto **shared columns** (0.900, 0.755, 0.635) rather than sitting a hundredth apart. A near-miss reads as sloppiness, and the previous layout had two.
+
+`SprintButton` sits on the **left**, above the thumbstick zone. It was previously at x = 0.79 among the combat cluster, contradicting the placement rule above.
+
+### Geometry check
+
+Hand-placing this layout produced three real defects — a 0.09px Block/Breakthrough gap, Basic Attack 10.6px inside the jump reserve, Ability4 13.7px inside the chat reserve. **Validate, do not eyeball.** At 750×361, check:
+
+- all 45 button pairs for an edge gap `< 8px`
+- every button box against the four reserved zones
+- any two buttons within 0.02 scale of an axis without exactly sharing it
+- anything outside the screen
+
+The current values pass all four with **zero failures**; the tightest pair is 11.25px.
 
 ### Sizes
 
