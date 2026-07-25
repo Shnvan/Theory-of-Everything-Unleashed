@@ -1,0 +1,25 @@
+// Copy to .vscode/settings.json. That path is gitignored, so this example is
+// the committed record of what the editor needs.
+//
+// Requires the luau-lsp extension (JohnnyMorganz.luau-lsp).
+//
+// Why the Studio plugin matters: luau-lsp cannot type the DataModel from files
+// alone. The companion Studio plugin streams the open place's instance tree to
+// the language server, which is what makes PlayerGui.GameHUD and similar
+// lookups typecheck. Without it, Studio-owned instances are untyped -- see
+// docs/HUD_AND_UI_SPEC.md for the contract those lookups depend on.
+{
+  "luau-lsp.studioPlugin.enabled": true,
+  "luau-lsp.sourcemap.enabled": true,
+  "luau-lsp.sourcemap.rojoProjectFile": "default.project.json",
+  "luau-lsp.types.roblox": true,
+
+  "[luau]": {
+    "editor.defaultFormatter": "JohnnyMorganz.stylua",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4
+  },
+
+  "files.eol": "\n"
+}

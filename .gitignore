@@ -1,5 +1,7 @@
-# Local editor settings
-.vscode/
+# Local editor settings. The example file is committed so the editor setup is
+# reproducible; the real settings.json stays local.
+.vscode/*
+!.vscode/settings.json.example
 .idea/
 
 # Local environment and credentials
@@ -11,6 +13,20 @@
 Thumbs.db
 
 # Studio-owned place files
+# The Studio place is the source of truth for the arena, GUI, rigs, and audio;
+# see the source-of-truth table in docs/STUDIO_IDE_WORKFLOW.md. Nothing here is
+# a repo-side backup, so the place must be published for recoverability.
 *.rbxl
 *.rbxlx
 
+# Toolchain-generated output
+Packages/
+DevPackages/
+ServerPackages/
+sourcemap.json
+roblox.yml
+build/
+
+# Model exports; art source will live under art/ with Git LFS after M4
+*.rbxm
+*.rbxmx

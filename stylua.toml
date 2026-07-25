@@ -1,0 +1,16 @@
+# Formatting rules for Theory of Everything: Unleashed.
+#
+# These values were chosen to match the formatting the existing source already
+# uses, so adopting StyLua produces a zero-line diff rather than a reformat
+# commit. Run `stylua src` to format and `stylua --check src` to verify.
+
+column_width = 120
+indent_type = "Tabs"
+indent_width = 4
+line_endings = "Unix"
+quote_style = "AutoPreferDouble"
+call_parentheses = "Always"
+collapse_simple_statement = "Never"
+
+[sort_requires]
+enabled = true

@@ -1,0 +1,17 @@
+# Normalize line endings so `stylua --check` and Selene behave identically on
+# Windows, macOS, Linux, and CI. stylua.toml sets line_endings = "Unix", so text
+# files must be stored and checked out with LF regardless of platform. Without
+# this, a Windows checkout fails `stylua --check` on every line.
+* text=auto eol=lf
+
+# Studio place and model files must never be line-ending converted.
+*.rbxl  binary
+*.rbxm  binary
+*.rbxlx -text
+*.rbxmx -text
+
+# Art source binaries, for the post-M4 art/ tree.
+*.blend binary
+*.fbx   binary
+*.png   binary
+*.ogg   binary

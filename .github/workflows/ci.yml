@@ -1,0 +1,46 @@
+name: CI
+
+# Static gates only. These checks cannot prove combat behavior: per
+# docs/TECHNICAL_ARCHITECTURE.md, any change to remotes, hit detection, state
+# transitions, damage, cooldowns, KOs, or respawn is incomplete until it passes
+# a Studio server-and-two-clients test, and input or HUD changes also require
+# mobile device emulation. CI green is a floor, not acceptance evidence.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  static-checks:
+    name: Format, lint, and build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install pinned toolchain
+        uses: CompeyDev/setup-rokit@v0.2.1
+        with:
+          cache: true
+
+      - name: Install Wally packages
+        run: wally install
+
+      - name: Check formatting
+        run: stylua --check src
+
+      - name: Generate Roblox standard library for Selene
+        run: selene generate-roblox-std
+
+      - name: Lint
+        run: selene src
+
+      - name: Build place from project file
+        # Proves default.project.json resolves and every source file parses.
+        # This output is NOT the game place -- it contains only the three code
+        # folders, because the Studio place owns the arena, GUI, rigs, and
+        # audio. Never publish this artifact over the real place.
+        run: rojo build --output /tmp/toeu-ci-check.rbxlx

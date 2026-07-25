@@ -1,0 +1,22 @@
+# Lint rules for Theory of Everything: Unleashed.
+#
+# `std = "roblox"` requires a generated standard library. Run
+# `selene generate-roblox-std` from the repository root; it writes roblox.yml,
+# which is gitignored because it is derived from the current Roblox API dump and
+# is regenerated in CI.
+#
+# Run `selene src` to lint.
+
+std = "roblox"
+
+[lints]
+# AGENTS.md forbids `_G` and hidden cross-module mutation, and
+# docs/TECHNICAL_ARCHITECTURE.md forbids legacy wait/spawn/delay. Selene
+# reports these by default; they are errors here, not warnings, because the
+# project treats them as rules rather than preferences.
+global_usage = "deny"
+deprecated = "deny"
+incorrect_standard_library_use = "deny"
+
+# Roblox event callbacks legitimately ignore arguments they do not need.
+unused_variable = "warn"

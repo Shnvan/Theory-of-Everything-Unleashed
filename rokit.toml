@@ -1,0 +1,14 @@
+# Toolchain for Theory of Everything: Unleashed
+#
+# Rokit pins every tool version so a clean checkout reproduces the same
+# toolchain. Install with `rokit install` from the repository root.
+#
+# Recorded by D-018, which supersedes D-010 ("do not require Rojo for the
+# prototype"). See docs/TOOLING_AND_PIPELINE.md for what each tool is for and
+# docs/STUDIO_IDE_WORKFLOW.md for how it fits the Studio workflow.
+
+[tools]
+rojo = "rojo-rbx/rojo@7.7.0"
+wally = "UpliftGames/wally@0.3.2"
+stylua = "JohnnyMorganz/StyLua@2.5.2"
+selene = "Kampfkarren/selene@0.31.0"

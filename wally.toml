@@ -1,0 +1,29 @@
+[package]
+name = "toeu/theory-of-everything-unleashed"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+license = "UNLICENSED"
+exclude = ["**"]
+
+# No dependencies yet, deliberately.
+#
+# Adopting Wally (D-018) buys the capability to install combat libraries; it is
+# not permission to install them. Every package is a third-party dependency and
+# therefore passes the security and provenance review in
+# docs/ASSET_PROVENANCE_LEDGER.md before it lands here.
+#
+# Reviewed candidates and what they would be for are recorded in
+# docs/TOOLING_AND_PIPELINE.md. The likely first three, in order of expected
+# need:
+#
+#   teamswordphin/shapecasthitbox  melee hitboxes (M2 hit detection)
+#   sleitnick/trove                lifetime cleanup for hitboxes, VFX, forces
+#   1axen/blink                    buffer network serialization (only if the
+#                                  plain-remote surface proves too costly)
+#
+# Do not add a package to satisfy a hypothetical need. AGENTS.md: "Do not add a
+# framework or package manager during the prototype without a concrete need."
+[dependencies]
+
+[dev-dependencies]
