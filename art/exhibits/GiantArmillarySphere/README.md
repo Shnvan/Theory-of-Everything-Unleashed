@@ -51,6 +51,36 @@ Stated plainly, because the factual card must not claim otherwise:
 5. Write the factual museum card with the real dimensions and disclosed display scale.
 6. Get a human review signature.
 
+## Placement result — 2026-07-26
+
+Placed into `North_CelestialHall.GiantArmillarySphere` as `ProductionMesh` at 148.12, 33.16, 164.50 — the prototype ring centre, not the Model bounding-box centre, which sits low because it includes the plinth and plaque.
+
+The 67 prototype parts (26 ring parts at the Model root, 41 under `VisualDetail`) are **hidden, not deleted**. Each stores its original `Transparency` and `CanCollide` in attributes, so restoring them is a one-line script. They stay until this exhibit passes review, which it has not.
+
+| Check | Result |
+|---|---|
+| Axis-aligned footprint | Unchanged, delta 0.0000 on every axis |
+| Preserved children | `CollisionShells`, `Plinth`, `LabelAnchor`, `NamePlaque` all intact |
+| Colliding parts in exhibit | Exactly 1 — `PrimaryCollisionShell` |
+| Raycast through exhibit | Hits the shell, not the mesh |
+| Reversibility | 67 hidden, 67 with stored originals |
+
+Mesh set to `CanCollide = false`, `CanQuery = false`, `CollisionFidelity = Box`, `Material = Metal` in brass.
+
+### A verification method that was wrong
+
+The first check used `Model:GetBoundingBox()` and reported the footprint growing 4.43 studs in X and 7.99 in Z. That was **an artifact of the instrument, not a real change**: `GetBoundingBox` returns an *oriented* box, so adding any part can rotate the fit and produce a delta with nothing moving.
+
+Recomputing an explicit axis-aligned box showed zero change on every axis. The exhibit's real extents are set by `TrimBack`, `TrimLeft`, and `InscriptionStone` — all pre-existing — and the mesh sits entirely inside them.
+
+**Use an explicit AABB for footprint checks.** `GetBoundingBox` is not a stable measure across structural edits.
+
+### Honest visual assessment
+
+It reads as a real instrument rather than the 48 spheres it replaces. But at gameplay distance the ring set looks **busy** — the colures and tropics overlap into something closer to a ball of wire than a precise brass instrument.
+
+That is a parameter problem, not a pipeline one: fewer rings, thinner bands, or a smaller `BAND_WIDTH_RATIO`. Worth tuning against real reference photography of object `1878-12` at the same time the proportions get verified, rather than guessing twice.
+
 ## Regenerating
 
 ```
