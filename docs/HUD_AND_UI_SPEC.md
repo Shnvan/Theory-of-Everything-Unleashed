@@ -220,7 +220,7 @@ The HUD is acceptable when, on the target viewport in device emulation:
 - [ ] Health, active cooldowns, and meter are readable at a glance during combat.
 - [ ] Spawn protection is obvious both on the HUD and on the character.
 - [ ] Hit, block, and miss are distinguishable with sound off, and again with the screen ignored.
-- [ ] Holding Block then losing window focus releases the block rather than latching it. This is the regression fixed in S10 of [PROJECT_AUDIT_2026-07-25.md](PROJECT_AUDIT_2026-07-25.md) and only a device test proves it.
+- [ ] Holding Block then losing window focus releases the block rather than latching it. This is the regression fixed in S10 of [PROJECT_AUDIT_2026-07-25.md](PROJECT_AUDIT_2026-07-25.md). **A human cannot check this by feel** — nothing on screen indicates whether Block is held, so playing the game proves nothing either way. It needs a debug readout of `IsActionDown("Block")`, or a unit test over the release path. Do not mark it passed on the strength of the button feeling fine.
 - [ ] `TouchControls` is hidden on desktop and visible on touch, and switching input mid-session updates it.
 
 Record results in a [playtest note](templates/PLAYTEST_NOTE.md).

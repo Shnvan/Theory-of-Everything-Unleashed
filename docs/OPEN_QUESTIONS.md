@@ -35,7 +35,8 @@ An unknown with no ID cannot be tracked or closed. Six live unknowns were previo
 | ID | Resolution | Decision |
 |---|---|---|
 | Q-009 | RESOLVED by D-013 and refined by D-014 and D-015 on 2026-07-23 | The first arena is **The Omniscience Coliseum**, a monumental Greco-Roman science coliseum with an approximately 759-stud contained combat disc and 5× physical exhibits distributed across its interior. |
-| Q-019 | RESOLVED by D-021 on 2026-07-25 | Sprint is `LeftShift`/`RightShift` held, with a `SprintButton` touch control, and is a movement modifier rather than a combat state. Assigned an ID retroactively because the code had already decided it without a record. |
+| Q-019 | RESOLVED by D-021 on 2026-07-25, then SUPERSEDED by D-028 on 2026-07-26 | D-021 made sprint a held `LeftShift`/`RightShift` action with a touch button. D-028 removed it as an input entirely: sprinting is automatic at full movement magnitude and `Shift` now holds to **walk**. The state-model finding survives both — speed is a movement modifier, not a combat state. |
+| Q-023 | RESOLVED on 2026-07-26 | **No — an agent's sign-off does not satisfy "named reviewer".** An agent may research a row, verify the licence, and record hashes and asset IDs, but a human sets the final status, because the field records accountability for a rights decision. Demonstrated by the `UI-ICON-*` rows: prepared by an agent, signed by **Shnvan**. Consequence: `REF-ARENA-001`, signed by "Codex", is not reviewed and needs a human or an explicit no-approval note. |
 
 ## Required before public alpha
 
@@ -47,8 +48,7 @@ An unknown with no ID cannot be tracked or closed. Six live unknowns were previo
 | Q-015 | Test community and moderation process? | Small invitation-only group before public discovery. Gates the M3 exit condition, which needs three uninstructed testers, so it is nearer than "before public alpha" suggests |
 | Q-020 | What are the public-alpha metric targets? | Cannot be set until closed-test baselines exist. Do not invent numbers before then |
 | Q-022 | May the name "Isaac Newton" appear in player-facing text? | `docs/GRAVITY_SOVEREIGN.md` permits it "only after the project completes its clearance record." Until then, select-screen titles only |
-| Q-024 | Where does the CC BY 3.0 attribution for the HUD icons appear in-game? | The six `UI-ICON-*` assets in `docs/ASSET_PROVENANCE_LEDGER.md` are already in the place, and their licence makes credit a condition of use rather than a courtesy. The game has no credits or settings menu. game-icons.net's FAQ accepts a menu-reachable mention for a video game. Recommended: a minimal Credits panel reachable from the pause/settings menu, built when the first settings UI exists. **This blocks release, not art production** — the obligation is live the moment the game is public. See D-027 |
-| Q-023 | Does AI-agent sign-off satisfy the ledger's "named reviewer" requirement for rights decisions? | Raised as S16 in `docs/PROJECT_AUDIT_2026-07-25.md`: the single existing ledger row records "Codex" as its reviewer. Recommended answer is no — an agent may prepare a provenance row, but a human names themselves on it |
+| Q-024 | Where does the CC BY 3.0 attribution for the HUD icons appear in-game? | The `UI-ICON-*` assets in `docs/ASSET_PROVENANCE_LEDGER.md` are already in the place, and their licence makes credit a **condition of use**: without it there is no permission. The game has no credits or settings menu to put it in. **Two-step answer.** *Now, to unblock release:* paste the credit line into the Roblox experience description — no code, no UI, and players read it before joining, which meets game-icons.net's FAQ standard of a reachable mention for a video game. *Later, properly:* a small Credits panel in the pause/settings menu once one exists. Practical risk is near zero while the place is private and rises the moment it is public. See D-027 |
 
 ## Not questions for the current milestone
 
