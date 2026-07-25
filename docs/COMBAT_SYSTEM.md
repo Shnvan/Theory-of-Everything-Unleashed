@@ -50,7 +50,7 @@ Bindings and touch-button names live in `src/shared/Config/InputConfig.luau`; th
 | Assist lookback window | 10 seconds | DEFAULT |
 | Assist damage threshold | 10% of maximum health | DEFAULT |
 | Block arc | About 120 degrees, frontal | DEFAULT |
-| Arena crossing time | About 53 seconds | DEFAULT, revised by D-015 |
+| Arena crossing time | About 35 seconds | DEFAULT (P-008). Rescaled from the 53 seconds measured at `WalkSpeed` 16, after P-010 raised speed to 24 |
 
 **These values now live in `src/shared/Config/CombatConfig.luau`, which is the source of truth for them.** This table is the explanation; the module is the number. If they disagree, say so rather than picking one.
 

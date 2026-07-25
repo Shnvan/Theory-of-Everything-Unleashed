@@ -63,7 +63,7 @@ This is a future target, not the current build.
 
 ### Content budget
 
-- One finished arena based on the approximately 759-stud combat disc, with an estimated clear-lane crossing time of about 53 seconds at default movement speed.
+- One finished arena based on the approximately 759-stud combat disc, with an estimated clear-lane crossing time of about 35 seconds at the configured movement speed (`SPRINT_SPEED` = 24, P-010). The 53-second figure this replaces was measured at Roblox's default speed of 16, before the project set its own.
 - Maximum eight players per server.
 - Three fighters:
   - Gravity Sovereign.

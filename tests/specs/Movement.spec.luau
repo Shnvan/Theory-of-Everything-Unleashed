@@ -34,12 +34,17 @@ test("both speeds are positive, so neither state freezes the character", functio
 	isTrue(CombatConfig.SPRINT_SPEED > 0, "sprint speed positive")
 end)
 
-test("sprint speed stays at the value the arena crossing time was measured against", function()
-	-- docs/OMNISCIENCE_COLISEUM.md timed the arena at WalkSpeed 16, and P-008's
-	-- ~53 second crossing estimate depends on it. Changing this is legitimate,
-	-- but it invalidates that measurement -- so this test exists to make the
-	-- coupling impossible to change by accident.
-	equal(CombatConfig.SPRINT_SPEED, 16, "sprint speed")
+test("sprint speed matches the value the arena figures are stated against", function()
+	-- The arena's crossing time is a function of this number, so the two must be
+	-- changed together. This test already earned its keep once: raising the speed
+	-- from 16 to 24 tripped it, which is exactly the reminder it exists to give.
+	-- If it fails, rescale the figures in docs/OMNISCIENCE_COLISEUM.md and P-008
+	-- rather than deleting the test.
+	equal(CombatConfig.SPRINT_SPEED, 24, "sprint speed")
+end)
+
+test("walk is half of sprint, so the modifier is an obvious change and not a nudge", function()
+	equal(CombatConfig.WALK_SPEED * 2, CombatConfig.SPRINT_SPEED, "walk to sprint ratio")
 end)
 
 describe("movement is not a combat state")

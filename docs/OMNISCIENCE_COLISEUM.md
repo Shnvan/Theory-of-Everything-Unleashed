@@ -28,7 +28,11 @@ D-017 does not alter that accepted prototype. If the project passes M4, the futu
 - Exactly one angled dark-stone inscription at the center-facing base of every exhibit; formula visuals, original fighter-title plaques, and the arena title remain.
 - 1,949 anchored BaseParts total, including 445 architectural-detail parts, 984 exhibit visual-detail parts, and 24 simplified exhibit collision shells.
 
-The D-014 arena used a 240-stud combat disc and a 16.77-second tested route. D-015 increases its floor area tenfold, producing an estimated full clear-lane crossing time of about 53 seconds. A tested 100-stud segment along the required `Z=70` lane took 6.15 seconds at `WalkSpeed=16`.
+The D-014 arena used a 240-stud combat disc and a 16.77-second tested route. D-015 increases its floor area tenfold. A tested 100-stud segment along the required `Z=70` lane took **6.15 seconds at `WalkSpeed = 16`**, giving a full clear-lane crossing of about 53 seconds.
+
+Movement speed has since risen to 24 (P-010), so the same lane is now about **4.1 seconds per 100 studs and roughly 35 seconds end to end**. Those two numbers are **derived by rescaling, not re-measured** — valid because speed is linear along a clear lane, but re-measure if the lane gains obstacles or slopes.
+
+Do not be surprised that 759 ÷ 24 gives 31 seconds rather than 35. The original figure was a walked route, not a straight diameter, and carried roughly 12% overhead from acceleration and the lane's actual path. The 35-second number preserves that overhead and is the like-for-like comparison; 31 seconds is the frictionless ideal.
 
 ## Exhibit organization
 
@@ -85,7 +89,7 @@ In the deferred D-017 pass, those fighter-title monuments remain separate. The `
 - Solo spawn occurred safely inside the combat boundary at radius 334.59.
 - Ray tests hit `CombatDisc`, `InnerBalustrade`, and the invisible `ArenaBoundary`.
 - A player-sized full-width blockcast confirmed the required `Z=70` interior lane is clear.
-- A 100-stud walk segment on that lane completed in 6.15 seconds.
+- A 100-stud walk segment on that lane completed in 6.15 seconds, measured at `WalkSpeed = 16`. At the current `SPRINT_SPEED` of 24 that rescales to about 4.1 seconds.
 - Eight representative exhibit-approach walks, one per sector, completed without collision snags.
 - Eight seconds of repeated outward walking and jumping reached a maximum radius of 368.52 and could not cross the 373.97-stud containment ring.
 - Solo Studio Output contained no project-script errors.

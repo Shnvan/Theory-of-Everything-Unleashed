@@ -57,10 +57,10 @@ These are starting values, not promises.
 | P-005 | DEFAULT | Responsive basic attacks with heavier cinematic abilities |
 | P-006 | DEFAULT | Third-person camera and hybrid directional targeting |
 | P-007 | SUPERSEDED | Expanded arena clear-lane crossing time of about seventeen seconds; replaced by D-015 |
-| P-008 | DEFAULT | Clear-lane crossing time across the current arena, estimated at about 53 seconds. The arena has eight thematic sectors; "ten" in the superseded P-004 and P-007 lineage referred to ten times D-014's floor area, not ten areas. |
+| P-008 | DEFAULT | Clear-lane crossing time across the current arena, about **35 seconds** at `SPRINT_SPEED` = 24. **Derived, not re-measured:** the original 53 seconds was measured at `WalkSpeed` 16 and rescaled by 16/24, which is valid because speed is linear along a clear lane. Re-measure if the lane stops being clear. The arena has eight thematic sectors; "ten" in the superseded P-004 and P-007 lineage referred to ten times D-014's floor area, not ten areas. |
 | P-009 | SUPERSEDED | Sprint bound to `LeftShift`/`RightShift` as a hold action; replaced by D-028. `LeftShift`/`RightShift` now hold to **walk**, and sprinting is automatic at full movement input |
-| P-010 | DEFAULT | `SPRINT_SPEED` = 16, the normal `Humanoid.WalkSpeed` cap. Deliberately Roblox's engine default: `docs/OMNISCIENCE_COLISEUM.md` measured the arena's crossing time at exactly this, so changing it invalidates that measurement and P-008 with it. Expect it to feel slow for a fighting game and to be tuned up after a playtest — at which point re-measure the arena |
-| P-011 | DEFAULT | `WALK_SPEED` = 8, the cap while `Walk` is held. Half, so the modifier reads as a deliberate choice rather than a slight nudge |
+| P-010 | DEFAULT | `SPRINT_SPEED` = 24, the normal `Humanoid.WalkSpeed` cap. Started at Roblox's default of 16 and was raised the same day after the first playtest: 16 felt sluggish crossing a 759-stud arena. The arena figures in P-008 and `docs/OMNISCIENCE_COLISEUM.md` were measured at 16 and have been rescaled to match |
+| P-011 | DEFAULT | `WALK_SPEED` = 12, the cap while `Walk` is held. Half of sprint, so the modifier reads as a deliberate choice rather than a slight nudge |
 
 Change defaults through documented playtest evidence without treating the change as a project pivot.
 

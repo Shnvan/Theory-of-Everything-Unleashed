@@ -52,14 +52,15 @@ CombatConfig.COMBO_RESET_SECONDS = 1.1
 	speed.
 ]]
 
--- DEFAULT (P-010). The normal cap, and deliberately Roblox's engine default:
--- docs/OMNISCIENCE_COLISEUM.md measured the arena's crossing time at this value,
--- so changing it invalidates that measurement and P-008 along with it.
-CombatConfig.SPRINT_SPEED = 16
+-- DEFAULT (P-010). The normal cap. Raised from Roblox's default of 16 on
+-- 2026-07-26 because 16 felt sluggish in a 759-stud arena: crossing it took
+-- about 53 seconds. The arena figures in docs/OMNISCIENCE_COLISEUM.md and P-008
+-- were measured at 16 and have been rescaled accordingly.
+CombatConfig.SPRINT_SPEED = 24
 
--- DEFAULT (P-011). Half, so holding Walk reads as a deliberate choice rather
--- than a slight nudge.
-CombatConfig.WALK_SPEED = 8
+-- DEFAULT (P-011). Half of sprint, so holding Walk reads as a deliberate choice
+-- rather than a slight nudge.
+CombatConfig.WALK_SPEED = 12
 
 -- Death and respawn -----------------------------------------------------------
 
