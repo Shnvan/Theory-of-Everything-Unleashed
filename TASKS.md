@@ -49,11 +49,12 @@ Added 2026-07-25 after the audit in [docs/PROJECT_AUDIT_2026-07-25.md](docs/PROJ
 - [ ] Re-sign or annotate `REF-ARENA-001`, which is still signed by an AI agent and is therefore not reviewed under the Q-023 resolution.
 - [ ] **NEEDS ROBLOX.** Paste the CC BY 3.0 credit line into the experience description (Q-024). One minute, no code, and it discharges the licence condition that currently blocks release.
 - [ ] Build a Credits panel in the settings/pause menu for the same attribution, once a settings UI exists (Q-024, proper fix).
-- [ ] Implement the shared combat state machine. *`CombatTypes.CombatState` and the priority table exist; the transition rules do not.*
+- [x] Implement the shared combat state machine. *Done 2026-07-26 as `src/shared/Combat/CombatStateMachine.luau` (D-031). Pure functions: `canEnter`, `isActionPermitted`, `releaseHold`, `getRespawnState`. Verified by 36 unit tests plus a require in a live play session. Consumed by nothing yet — it is rules, not wiring.*
 - [ ] Implement automatic sprint, the `Walk` modifier, and directional dash (D-028). Sprint is derived from movement magnitude rather than requested by an input; put its threshold and both speed multipliers in `CombatConfig` when writing it. *Design accepted by the user 2026-07-26, including `Shift` meaning walk rather than sprint. Accepted, not verified — there is no movement code yet, so there is nothing to feel.*
 - [ ] Implement 100 health, death, five-second respawn, and brief spawn protection.
 - [ ] Add a training dummy with resettable health.
-- [ ] Add unit tests over the pure shared logic: transition legality, priority comparison, assist threshold, and block-arc geometry. Retires the "every combat change costs a two-client playtest" risk.
+- [x] Add unit tests over the pure shared logic: transition legality, priority comparison, and assist threshold. *Done 2026-07-26 (D-032). Lune runner, 36 tests in `tests/`, wired into CI. The suite was verified to fail correctly, not just to pass.*
+- [ ] Add block-arc geometry tests. Deferred from the line above: no geometry function exists yet, and it needs `Vector3`, which the Lune harness deliberately does not provide. Belongs with M2 hit detection.
 
 **M1 exit condition:** a player can move, dash, damage the dummy through a server-approved test action, die, and respawn without stuck states.
 

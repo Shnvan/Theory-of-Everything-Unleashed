@@ -53,6 +53,13 @@ jobs:
           luau-lsp analyze --definitions=globalTypes.d.luau --sourcemap=sourcemap.json
           --ignore="**/Packages/**" src
 
+      - name: Unit tests
+        # Rung 2 of the verification ladder in docs/DEVELOPER_RULES.md. Covers
+        # pure shared logic only -- it cannot prove replication, feel, or
+        # anything needing the engine. Lune is pinned in rokit.toml, so
+        # setup-rokit above already installed it.
+        run: lune run tests/run.luau
+
       - name: Build place from project file
         # Proves default.project.json resolves and every source file parses.
         # This output is NOT the game place -- it contains only the three code

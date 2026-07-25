@@ -86,7 +86,26 @@ From strongest to weakest:
 
 An implementation may refine this model, but it must define legal transitions centrally. Do not let each move invent its own stun, lock, or invulnerability flags.
 
-The state list and this priority order exist as data in `src/shared/Types/CombatTypes.luau` (`CombatState`, `STATE_PRIORITY`, `isStrongerThan`). The transition rules themselves are not written yet.
+The state list and this priority order exist as data in `src/shared/Types/CombatTypes.luau` (`CombatState`, `STATE_PRIORITY`, `isStrongerThan`). The transition rules live in `src/shared/Combat/CombatStateMachine.luau` and are recorded as **D-031**.
+
+### Legal transitions
+
+Checked in order. The first four cases cannot be expressed by priority alone.
+
+| # | Rule | Consequence |
+|---:|---|---|
+| 1 | A state never replaces itself | Re-entry is always a deliberate call. The four-hit chain re-entering `Attacking` does not go through this check |
+| 2 | Any state may enter `Dead` | Death overrides every action state |
+| 3 | `Dead` is otherwise terminal | `SpawnProtected` is the only way out — that is respawn |
+| 4 | `Blocking` may be entered **only from `Neutral` or `SpawnProtected`** | Committing to a dash or an ability means committing; block cannot erase it |
+| 5 | `Neutral` is reachable from every living state | The universal recovery target. Stun expiry, ragdoll recovery, and block release all land here |
+| 6 | Otherwise priority decides | Stronger interrupts weaker; equal never replaces |
+
+Two rules beyond the table. `Dash` is permitted while `Ragdolled` — that is the escape below, and whether the charge is available is a cooldown question rather than a state one. `Walk` drives no state at all and is permitted whenever the character is alive.
+
+**Block is hold-to-keep.** It persists because nothing weaker can displace it, and releasing returns the character to `Neutral`. `releaseHold` takes the *action*, not the input phase, so `End` and `Cancel` resolve through one path and cannot diverge — that is the S10 latch regression, now covered by a unit test.
+
+Rule 4 is the one place this goes beyond the rules above, which forbid blocking only while stunned, ragdolled, dead, or attacking and are silent on `Dashing`, `UsingAbility`, and `Awakening`. The strict reading was chosen and recorded in D-031 rather than assumed.
 
 ## M1 chain
 

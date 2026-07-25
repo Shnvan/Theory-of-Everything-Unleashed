@@ -21,3 +21,8 @@ selene = "Kampfkarren/selene@0.31.0"
 #   luau-lsp analyze --definitions=globalTypes.d.luau --sourcemap=sourcemap.json src
 # globalTypes.d.luau is fetched, not committed; see .gitignore.
 luau-lsp = "JohnnyMorganz/luau-lsp@1.69.0"
+# Standalone Luau runtime, used to run the unit tests in tests/ without Roblox.
+# Chosen over the Jest-Lua named in docs/TOOLING_AND_PIPELINE.md because Jest-Lua
+# is not a standalone CLI: it needs an execution host underneath, so it would
+# mean adding Lune anyway plus the repository's first Wally package. See D-032.
+lune = "lune-org/lune@0.10.4"
