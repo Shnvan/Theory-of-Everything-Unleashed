@@ -136,6 +136,14 @@ def sphere(name, r, x=0.0, y=0.0, z=0.0, segments=14, rings=10):
 	return o
 
 
+def torus(name, major, minor, x=0.0, y=0.0, z=0.0, rot=(0.0, 0.0, 0.0), major_seg=24, minor_seg=6):
+	bpy.ops.mesh.primitive_torus_add(major_radius=major, minor_radius=minor,
+		major_segments=major_seg, minor_segments=minor_seg, location=(x, y, z), rotation=rot)
+	o = bpy.context.active_object
+	o.name = name
+	return o
+
+
 def join_as(name, parts):
 	"""Join a list of objects into one named object and return it."""
 	bpy.ops.object.select_all(action="DESELECT")
@@ -346,23 +354,145 @@ def build_einstein_figure(base_z):
 	outstretched arm holding a galaxy orb.
 
 	Outward arm on local +X so that after yaw +40 deg it reaches world +X.
+
+	PILOT — recognisable-figurine fidelity (~60-80 primitives instead of ~15).
+	Compared to Tesla and Newton in the same session, Einstein gets:
+	  - Real body proportions (shoulders + torso taper + hips + separate legs
+	    + feet), not one cylinder for legs and one for torso
+	  - Casual sweater with visible collar and lower hem
+	  - Face features: nose, moustache, eyebrow ridges, chin
+	  - Wild hair as 10 radial spikes around a smaller head, not one big sphere
+	This is the signature Einstein silhouette the low-primitive version cannot
+	produce. If the pilot reads as recognisably him, the same technique goes
+	on Newton and Tesla in a follow-up session.
 	"""
 	parts = []
-	leg_h = STATUE_H * 0.40
-	parts.append(cyl("Einstein_Legs", STATUE_R * 0.9, leg_h, 0.0, 0.0, base_z + leg_h / 2))
-	torso_h = STATUE_H * 0.38
-	parts.append(cyl("Einstein_Torso", STATUE_R * 1.1, torso_h, 0.0, 0.0, base_z + leg_h + torso_h / 2))
-	head_r = STATUE_R * 0.75
-	shoulder_z = base_z + leg_h + torso_h * 0.82
-	parts.append(sphere("Einstein_Head", head_r, 0.0, 0.0, base_z + leg_h + torso_h + head_r * 0.9))
-	# Wild hair -- the one exaggeration kept, because it is a real and
-	# documented feature of the man rather than a caricature invention
-	parts.append(sphere("Einstein_Hair", head_r * 1.25, 0.0, 0.0, base_z + leg_h + torso_h + head_r * 1.35))
-	add_facing_cues(parts, "Einstein", base_z + leg_h + torso_h / 2, STATUE_R * 1.1, torso_h,
-		base_z + leg_h + torso_h + head_r * 0.9, head_r)
 
-	# Mirror of Tesla's arm; after the +40 degree yaw it lands at world
-	# (+0.998, +0.069) -- straight out along +X.
+	# --- lower body: separate legs and feet, hip block above -----------------
+	foot_h = 0.4
+	foot_len = 1.0
+	foot_w = 0.55
+	leg_h = STATUE_H * 0.34
+	leg_r = STATUE_R * 0.42
+	for side in (-1.0, 1.0):
+		lx = side * STATUE_R * 0.48
+		# Foot
+		parts.append(box(f"Einstein_Foot_{side > 0 and 'R' or 'L'}", foot_w, foot_len, foot_h,
+			lx, -0.15, base_z + foot_h / 2))
+		# Trouser leg
+		parts.append(cyl(f"Einstein_Leg_{side > 0 and 'R' or 'L'}", leg_r, leg_h,
+			lx, 0.0, base_z + foot_h + leg_h / 2))
+	# Hip block spans between the leg tops
+	hip_h = STATUE_H * 0.09
+	hip_z = base_z + foot_h + leg_h + hip_h / 2
+	parts.append(box("Einstein_Hips", STATUE_R * 1.4, STATUE_R * 1.1, hip_h,
+		0.0, 0.0, hip_z))
+	# Belt / trouser waistband — thin stripe of contrast at the top of the hips
+	parts.append(box("Einstein_Belt", STATUE_R * 1.45, STATUE_R * 1.12, 0.18,
+		0.0, 0.0, hip_z + hip_h / 2 + 0.09))
+
+	# --- torso: sweater tapering slightly outward from waist to shoulders ----
+	torso_h = STATUE_H * 0.30
+	torso_bottom_r = STATUE_R * 1.05
+	torso_top_r = STATUE_R * 1.15
+	torso_bottom_z = base_z + foot_h + leg_h + hip_h
+	torso_top_z = torso_bottom_z + torso_h
+	parts.append(cone("Einstein_Sweater", torso_bottom_r, torso_top_r, torso_h,
+		0.0, 0.0, torso_bottom_z + torso_h / 2))
+	# Sweater lower hem — the fold where the sweater meets the trousers
+	parts.append(torus("Einstein_SweaterHem", torso_bottom_r * 1.02, 0.15,
+		0.0, 0.0, torso_bottom_z + 0.15, major_seg=20, minor_seg=4))
+	# Collar around the neck opening — V-neck-ish
+	collar_z = torso_top_z - 0.2
+	parts.append(torus("Einstein_Collar", STATUE_R * 0.55, 0.16,
+		0.0, 0.0, collar_z, major_seg=20, minor_seg=4))
+
+	# --- neck ----------------------------------------------------------------
+	neck_h = STATUE_H * 0.04
+	parts.append(cyl("Einstein_Neck", STATUE_R * 0.35, neck_h,
+		0.0, 0.0, torso_top_z + neck_h / 2))
+
+	# --- head + face features ------------------------------------------------
+	# Head slightly smaller than the ~1.25 hair sphere the naive version used,
+	# because the hair spikes will sit around it and take the extra volume.
+	head_r = STATUE_R * 0.62
+	head_z = torso_top_z + neck_h + head_r
+	parts.append(sphere("Einstein_Head", head_r, 0.0, 0.0, head_z, segments=20, rings=14))
+	# Nose — elongated small box, facing -Y (the figure's own front, before yaw)
+	parts.append(box("Einstein_Nose", 0.18, 0.35, 0.24,
+		0.0, -head_r * 0.98, head_z - 0.05))
+	# Moustache — the tag-line Einstein feature. Flat wide box below the nose.
+	parts.append(box("Einstein_Moustache", 0.62, 0.18, 0.14,
+		0.0, -head_r * 0.94, head_z - 0.32))
+	# Eyebrow ridges — thick, one per eye
+	for side in (-1.0, 1.0):
+		parts.append(box(f"Einstein_Brow_{side > 0 and 'R' or 'L'}", 0.28, 0.14, 0.09,
+			side * 0.20, -head_r * 0.92, head_z + 0.20))
+	# Eye recesses — small dark spheres for eye sockets
+	for side in (-1.0, 1.0):
+		parts.append(sphere(f"Einstein_Eye_{side > 0 and 'R' or 'L'}", 0.10,
+			side * 0.18, -head_r * 0.94, head_z + 0.05, segments=8, rings=6))
+	# Chin definition — a small tapered stub below the moustache
+	parts.append(box("Einstein_Chin", 0.42, 0.24, 0.22,
+		0.0, -head_r * 0.88, head_z - 0.55))
+	# Ears — two small spheres on the sides of the head
+	for side in (-1.0, 1.0):
+		parts.append(sphere(f"Einstein_Ear_{side > 0 and 'R' or 'L'}", 0.14,
+			side * head_r * 0.92, 0.0, head_z, segments=8, rings=6))
+
+	# --- WILD HAIR as radial spikes ------------------------------------------
+	# 10 spikes distributed over the top and back of the head. Each spike is
+	# an elongated cone pointing outward from the head centre, giving the
+	# characteristic "electrocuted" silhouette.
+	spike_count = 10
+	spike_len = 0.9
+	spike_base_r = 0.22
+	for i in range(spike_count):
+		# Skew the distribution toward the top and back of the head, away from
+		# the face. Azimuth avoids the front-centre; elevation biases upward.
+		azimuth = math.radians(-140.0 + (280.0 * i / (spike_count - 1)))
+		elevation = math.radians(35.0 + 30.0 * ((i * 137) % 40) / 40.0)  # jittered per-spike
+		# Spike tip direction
+		dx = math.cos(elevation) * math.sin(azimuth)
+		dy = -math.cos(elevation) * math.cos(azimuth)   # -Y is "front", so most spikes point away
+		dz = math.sin(elevation)
+		# Spike root sits on the head surface; centre halfway to the tip
+		root = (dx * head_r * 0.95, dy * head_r * 0.95, head_z + dz * head_r * 0.95)
+		tip = (root[0] + dx * spike_len, root[1] + dy * spike_len, root[2] + dz * spike_len)
+		mid = ((root[0] + tip[0]) / 2, (root[1] + tip[1]) / 2, (root[2] + tip[2]) / 2)
+		# Orient a cone from root to tip using axis-angle
+		import mathutils
+		bpy.ops.mesh.primitive_cone_add(radius1=spike_base_r, radius2=0.03,
+			depth=spike_len, vertices=8, location=mid)
+		spike = bpy.context.active_object
+		spike.name = f"Einstein_HairSpike{i:02d}"
+		direction = mathutils.Vector((dx, dy, dz)).normalized()
+		up = mathutils.Vector((0.0, 0.0, 1.0))
+		dot = max(-1.0, min(1.0, up.dot(direction)))
+		if dot < 0.9999 and dot > -0.9999:
+			axis = up.cross(direction).normalized()
+			spike.rotation_euler = mathutils.Matrix.Rotation(math.acos(dot), 4, axis).to_euler()
+		elif dot < -0.9999:
+			spike.rotation_euler = (math.pi, 0.0, 0.0)
+		parts.append(spike)
+
+	# --- second, non-outstretched arm ----------------------------------------
+	# The current build_bent_arm handles the outstretched right arm reaching
+	# for the orb. Add a shorter left arm hanging down beside the body so the
+	# figure doesn't look one-armed at higher fidelity.
+	shoulder_z = torso_top_z - 0.1
+	# Left arm — bent slightly forward, hand near hip
+	left_shoulder = (-STATUE_R * 1.05, 0.0, shoulder_z)
+	left_elbow = (-STATUE_R * 1.25, -0.35, shoulder_z - 2.0)
+	left_hand = (-STATUE_R * 1.05, -0.55, shoulder_z - 3.4)
+	seg = cyl_along("Einstein_UpperArmL", ARM_R, left_shoulder, left_elbow)
+	if seg: parts.append(seg)
+	parts.append(sphere("Einstein_ElbowL", ARM_R * 1.1, left_elbow[0], left_elbow[1], left_elbow[2], segments=8, rings=6))
+	seg = cyl_along("Einstein_ForearmL", ARM_R * 0.9, left_elbow, left_hand)
+	if seg: parts.append(seg)
+	parts.append(sphere("Einstein_HandL", HAND_R, left_hand[0], left_hand[1], left_hand[2], segments=10, rings=6))
+
+	# --- right arm + orb (unchanged bent-arm pose) ---------------------------
 	orb_pos = build_bent_arm(parts, shoulder_z, side=+1, name_prefix="Einstein",
 		upper_dir=(0.60, -0.35, -0.72), fore_dir=(0.75, -0.62, 0.25))
 	return parts, orb_pos

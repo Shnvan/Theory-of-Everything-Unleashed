@@ -7,7 +7,7 @@ Historical portrayals. Part of the 2026-07-26 final-three batch, **reposed** the
 | Internal Studio identity | `TheOmniscienceColiseum.ExhibitSectors.Northwest_HallOfMinds.ScientistStatues` |
 | Visible name (pending rename) | **NIKOLA TESLA · ISAAC NEWTON · ALBERT EINSTEIN** — left-to-right, matching the statues |
 | Class | Historical portrayals — stylised silhouettes, not portrait-quality sculpts |
-| Geometry | 3,656 triangles across **3 objects**, 30.60 × 8.60 × 14.82 studs |
+| Geometry | 5,012 triangles across **3 objects**, 30.60 × 8.60 × 15.20 studs (Einstein pilot at higher fidelity; Newton and Tesla unchanged) |
 | Rights | Original geometry, informed by public-domain portraits. Ledger row `REF-EXH-024` |
 | Review | **UNSIGNED** |
 
@@ -78,6 +78,22 @@ Portrait references for silhouette guidance (public domain): Newton — Godfrey 
 2. Rename stone → `NIKOLA TESLA · ISAAC NEWTON · ALBERT EINSTEIN`. **Note the ordering choice:** this is left-to-right visual order so a visitor can match stone to statue. Chronological order (Newton 1643 · Tesla 1856 · Einstein 1879) would be the more traditional museum convention but would not match what the visitor sees, because the user asked for Newton in the middle. Worth a decision.
 3. Confirm which Einstein photograph to cite as reference.
 4. Studio materials: Neon on both orb MeshParts, brass Metal on the main mesh.
+
+## Einstein fidelity pilot (2026-07-26)
+
+User asked for the statues to be more realistic — "face, hair, clothes, hands" — after the initial trio shipped. The parametric-generator pipeline cannot produce the painted-anime-Roblox style the initial reference showed (that requires image decals from an artist, not code). The alternative the user chose was to push the pipeline as far as parametric primitives go: **~60-80 primitives per figure instead of ~15, in Blender, no external assets.** Einstein rebuilt as the pilot; Newton and Tesla left at the earlier fidelity so the trio stands side-by-side and the fidelity difference is directly visible.
+
+**What the pilot Einstein has that the other two don't:**
+
+- Real body proportions: separate legs, feet as distinct boxes, hip block, tapered sweater, visible sweater hem, V-neck collar, thin neck
+- Face features: nose, moustache, eyebrow ridges, eye sockets as recessed spheres, chin, ears
+- **Wild hair as 10 radial spikes** distributed over the top and back of the head, not one big sphere. This is the signature Einstein silhouette; it is the single most important feature for recognition and the reason to do this pass at all.
+- Second (non-outstretched) left arm, bent slightly forward with hand near hip — so the figure doesn't look one-armed at the higher fidelity level.
+- Right arm + galaxy orb pose unchanged from the earlier repose pass.
+
+**Cost:** current Einstein ~500 tri → pilot ~2,336 tri. Main mesh 4,220 tri total. Still well inside the 20k-per-mesh cap.
+
+**Go/no-go decision:** if the pilot reads as unmistakably Einstein at gameplay distance, the same treatment goes on Newton (long Baroque wig, prism in hand, scholar's robe folds) and Tesla (formal groomed hair, three-piece suit collar, moustache) in a follow-up session. If it reads only as "a low-poly man with spiky hair," we've caught that parametric primitives don't scale to portrait recognisability and the user faces the real-art-assets decision the plan deliberately deferred.
 
 ## History
 

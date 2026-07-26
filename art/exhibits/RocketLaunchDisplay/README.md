@@ -12,7 +12,7 @@ Fifth exhibit for the production pipeline. Follows the research-dossier gate in
 | Classification | Named replica — **three real objects at one disclosed display scale** |
 | Primary anchor | Saturn V vehicle **SA-501** (Apollo 4, launched 9 November 1967), its Mobile Launcher, and Launch Umbilical Tower at Kennedy Space Center Launch Complex 39A |
 | Dimension source | Wikipedia's *Saturn V* article for the vehicle (cites NASA technical documentation), *Kennedy Space Center Launch Complex 39* article for the LUT |
-| Geometry | 2,664 triangles, 1,512 vertices, 22.74 × 19.07 × 63.00 studs, one `MeshPart` |
+| Geometry | 2,664 triangles across **4 MeshParts** (polychrome pilot under D-037), 22.74 × 19.07 × 63.00 studs |
 | Construction | Parametric, `generate.py`, geometrically stable across runs |
 | **Display scale** | **1 stud = 7.08 ft = 2.16 m**, fixed by the LUT height (446 ft) fitting the 63-stud vertical envelope. Uniform across all three objects, as the accuracy doc requires |
 | Rights | Geometry original. Wikipedia text CC BY-SA 4.0 but only numeric facts used |
@@ -74,6 +74,32 @@ Stated plainly, because the factual card must not claim otherwise:
 Geometry here is **original**. Numeric facts from **Wikipedia** — text **CC BY-SA 4.0**, prose not reused. Recorded in [ASSET_PROVENANCE_LEDGER.md](../../../docs/ASSET_PROVENANCE_LEDGER.md) as `REF-EXH-007`.
 
 No NASA imagery is copied. NASA's own media is largely public domain (see `REF-EXH-005` for the SVS terms), but this exhibit uses none of it — only published measurements.
+
+## Polychrome pilot (2026-07-26, D-037)
+
+This exhibit is the pilot for D-037 — the amendment allowing real-object colours on production exhibit meshes while retaining the palette lock for arena architecture.
+
+**Four MeshParts, one per material group** (splitting-for-physics/material reasons, not budget — same principled split the black hole, statues+orbs, and equations wall use):
+
+| MeshPart | Contents | Studio material | Colour |
+|---|---|---|---|
+| `SaturnV_Body` | S-IC + S-II + S-IVB + IU + LM adapter + SM + LES tower + fins | `SmoothPlastic` | Institutional white |
+| `SaturnV_Engines` | Five F-1 bells + Command Module heat-shield + LES motor tip | `Metal` | Dark grey / near-black |
+| `SaturnV_LUT` | LUT tower structure + crane platform + crane jib | `SmoothPlastic` | LC-39A red-orange (Rocketdyne / lead-red primer visible in Apollo 4 launch photos) |
+| `SaturnV_ML` | Mobile Launcher (both stories) + hold-down arms + 9 swing arms + arm tips | `Metal` | Industrial grey |
+
+**What the polychrome captures that the all-brass version didn't:**
+
+- **White + dark-grey engines** is Saturn V's actual iconic look. All-brass is not honest about any rocket in history.
+- **Red LUT vs grey ML** matches Apollo-4 launch photography and lets a viewer read tower-vs-platform at a glance.
+- **Neon accents not used here** — this exhibit's real colour scheme has no glow; kept for the science-visualisation exhibits under D-016's science-energy accent allowance.
+
+**Simplifications kept from the earlier pass:**
+
+- Black roll-pattern stripes on the S-IC body are NOT modelled. Adding them would need a handful of new torus segments and their own bucket. Recorded as a future refinement — probably worth doing if the pilot is judged a success and the full 23-exhibit polychrome pass goes ahead.
+- Command Module coloured dark-grey (in the engine bucket) rather than silver — Roblox has no true silver material outside Neon and this is close enough at gameplay distance.
+
+**Assert added:** the generator fails the build if the export is not exactly the four expected object names — same protection the statue orbs have. If a future edit collapses the buckets back into one mesh, the polychrome pilot silently loses its point.
 
 ## Remaining before this can ship
 

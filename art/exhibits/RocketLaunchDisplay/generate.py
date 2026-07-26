@@ -127,61 +127,69 @@ def cone(name, radius1, radius2, depth, x=0.0, y=0.0, z=0.0, verts=SEGMENTS):
 	return o
 
 
-def build_mobile_launcher(parts):
-	"""Two-story rectangular platform."""
-	parts.append(box("MobileLauncherBase", ML_W, ML_D, ML_H * 0.6, 0.0, 0.0, ML_H * 0.3))
-	parts.append(box("MobileLauncherUpper", ML_W * 0.95, ML_D * 0.95, ML_H * 0.4, 0.0, 0.0, ML_H * 0.8))
+def _bucket(buckets, key, part):
+	"""Add a part to a named material bucket. Every sub-builder uses this
+	instead of a bare list.append so build() can join per bucket at the end,
+	one MeshPart per real material colour (D-037)."""
+	if key not in buckets:
+		buckets[key] = []
+	buckets[key].append(part)
+
+
+def build_mobile_launcher(buckets):
+	"""Two-story rectangular platform. Real ML was industrial grey painted steel."""
+	_bucket(buckets, "ml", box("MobileLauncherBase", ML_W, ML_D, ML_H * 0.6, 0.0, 0.0, ML_H * 0.3))
+	_bucket(buckets, "ml", box("MobileLauncherUpper", ML_W * 0.95, ML_D * 0.95, ML_H * 0.4, 0.0, 0.0, ML_H * 0.8))
 	# Four hold-down arms (small posts near where the rocket sits)
 	rocket_r = BASE_D / 2 + 0.4
 	rocket_cx = ML_W * 0.15  # rocket sits toward +X side of the ML, LUT on -X
 	for i in range(4):
 		a = math.radians(45 + i * 90)
-		parts.append(cyl("HoldDownArm", 0.35, 1.6, rocket_cx + rocket_r * math.cos(a), rocket_r * math.sin(a), ML_H + 0.8))
+		_bucket(buckets, "ml", cyl("HoldDownArm", 0.35, 1.6, rocket_cx + rocket_r * math.cos(a), rocket_r * math.sin(a), ML_H + 0.8))
 
 
-def build_lut(parts):
-	"""Tall lattice tower on the -X side of the mobile launcher."""
+def build_lut(buckets):
+	"""Tall lattice tower on the -X side of the mobile launcher.
+
+	Real LC-39A LUT was painted red-orange during the Apollo era (the
+	Rocketdyne / lead-red primer colour visible in Apollo 4 launch photos).
+	The retractable swing arms and their mechanical hardware were painted
+	grey/silver, distinct from the tower structure.
+	"""
 	base_z = ML_H
 	top_z = ML_H + LUT_H - ML_H  # tower rises to envelope top
 
-	# Four vertical corner posts define the tower's silhouette
+	# Four vertical corner posts + horizontal braces + crane -- all red LUT structure
 	half = LUT_CROSS / 2
 	for sx in (-1.0, 1.0):
 		for sy in (-1.0, 1.0):
-			parts.append(cyl("LUTCornerPost", 0.25, top_z - base_z,
+			_bucket(buckets, "lut", cyl("LUTCornerPost", 0.25, top_z - base_z,
 				LUT_X + sx * half, sy * half, (base_z + top_z) / 2))
 
-	# Horizontal cross-bracing every ~5 studs of height
 	brace_spacing = 5.0
 	n_braces = int((top_z - base_z) / brace_spacing)
 	for i in range(1, n_braces):
 		z = base_z + i * brace_spacing
 		for sy in (-1.0, 1.0):
-			parts.append(box("LUTHorizBrace", LUT_CROSS, 0.15, 0.15, LUT_X, sy * half, z))
+			_bucket(buckets, "lut", box("LUTHorizBrace", LUT_CROSS, 0.15, 0.15, LUT_X, sy * half, z))
 		for sx in (-1.0, 1.0):
-			parts.append(box("LUTHorizBrace", 0.15, LUT_CROSS, 0.15, LUT_X + sx * half, 0.0, z))
+			_bucket(buckets, "lut", box("LUTHorizBrace", 0.15, LUT_CROSS, 0.15, LUT_X + sx * half, 0.0, z))
 
-	# Crane sits at the top of the tower framework, not above it. The 446 ft
-	# LUT height cited in the source is measured to the tower top; the crane
-	# operates from inside the top platform. Placing the jib slightly below the
-	# highest structural member keeps the assembly inside the 63-stud envelope.
-	parts.append(box("LUTCranePlatform", LUT_CROSS, LUT_CROSS, 0.5, LUT_X, 0.0, top_z - 0.3))
-	parts.append(box("LUTCraneJib", 6.0, 0.35, 0.35, LUT_X + 3.0, 0.0, top_z - 0.9))
+	_bucket(buckets, "lut", box("LUTCranePlatform", LUT_CROSS, LUT_CROSS, 0.5, LUT_X, 0.0, top_z - 0.3))
+	_bucket(buckets, "lut", box("LUTCraneJib", 6.0, 0.35, 0.35, LUT_X + 3.0, 0.0, top_z - 0.9))
 
-	# Nine swing arms extending from LUT toward the rocket, at spaced heights
+	# Swing arms + tips -- grey, in the mobile-launcher bucket (they're
+	# mechanical equipment attached to the tower, not tower structure itself)
 	rocket_cx = ML_W * 0.15
-	arm_span = rocket_cx - LUT_X - half - BASE_D / 2  # from LUT edge to rocket edge
+	arm_span = rocket_cx - LUT_X - half - BASE_D / 2
 	for i in range(LUT_SWING_ARMS):
-		# Distribute arms up the height, denser toward top
 		frac = (i + 1) / (LUT_SWING_ARMS + 1)
 		z = base_z + (top_z - base_z) * frac
-		# Arm reaches from LUT edge to the rocket at whatever diameter that stage has
 		local_rocket_r = _rocket_radius_at(z - base_z)
 		reach = rocket_cx - LUT_X - half - local_rocket_r
 		arm_cx = LUT_X + half + reach / 2
-		parts.append(box("LUTSwingArm", reach, 0.4, 0.35, arm_cx, 0.0, z))
-		# Small vertical connector where arm meets rocket
-		parts.append(cyl("LUTArmTip", 0.25, 0.6, arm_cx + reach / 2, 0.0, z))
+		_bucket(buckets, "ml", box("LUTSwingArm", reach, 0.4, 0.35, arm_cx, 0.0, z))
+		_bucket(buckets, "ml", cyl("LUTArmTip", 0.25, 0.6, arm_cx + reach / 2, 0.0, z))
 
 
 def _rocket_radius_at(z_from_ml_top):
@@ -201,26 +209,35 @@ def _rocket_radius_at(z_from_ml_top):
 	return 0.0
 
 
-def build_saturn_v(parts):
-	"""The vehicle, from base of S-IC to tip of LES."""
-	rocket_cx = ML_W * 0.15
-	z = ML_H  # rocket sits on top of the mobile launcher
+def build_saturn_v(buckets):
+	"""The vehicle, from base of S-IC to tip of LES.
 
-	# S-IC first stage
-	parts.append(cyl("Saturn_S_IC", BASE_D / 2, STAGE_SIC_H, rocket_cx, 0.0, z + STAGE_SIC_H / 2, verts=SEGMENTS))
-	# Four fixed fins at S-IC base (visual identifier for Saturn V's silhouette)
+	Real Saturn V was painted white with black roll-pattern stripes at stage
+	joins (for optical tracking during launch). F-1 engine bells and the LES
+	motor were dark grey / metallic. The Command Module was silver-grey with
+	an ablative heat-shield coating.
+
+	Material buckets used:
+	  body   -> white (SmoothPlastic, Institutional white)
+	  engine -> dark grey (Metal, dark grey / near-black)
+	"""
+	rocket_cx = ML_W * 0.15
+	z = ML_H
+
+	# S-IC body + fins (all white)
+	_bucket(buckets, "body", cyl("Saturn_S_IC", BASE_D / 2, STAGE_SIC_H, rocket_cx, 0.0, z + STAGE_SIC_H / 2, verts=SEGMENTS))
 	for i in range(4):
 		a = math.radians(45 + i * 90)
 		fin_r = BASE_D / 2
 		fin_h = 4.0
 		fin_w = 1.0
 		fin_out = 1.2
-		parts.append(box("Saturn_S_IC_Fin", fin_out, fin_w, fin_h,
+		_bucket(buckets, "body", box("Saturn_S_IC_Fin", fin_out, fin_w, fin_h,
 			rocket_cx + (fin_r + fin_out / 2) * math.cos(a),
 			(fin_r + fin_out / 2) * math.sin(a),
 			z + fin_h / 2,
 			rot=(0.0, 0.0, a)))
-	# Five F-1 engine bells at S-IC base
+	# Five F-1 engine bells at S-IC base -- dark grey, in the engine bucket
 	for i in range(5):
 		if i == 0:
 			ex, ey = 0.0, 0.0
@@ -228,104 +245,136 @@ def build_saturn_v(parts):
 			a = math.radians(90 + (i - 1) * 90)
 			r = BASE_D / 2 * 0.55
 			ex, ey = r * math.cos(a), r * math.sin(a)
-		parts.append(cone("Saturn_F1_Bell", 0.55, 0.35, 1.6,
+		_bucket(buckets, "engine", cone("Saturn_F1_Bell", 0.55, 0.35, 1.6,
 			rocket_cx + ex, ey, z - 0.8))
 	z += STAGE_SIC_H
 
-	# Interstage between S-IC and S-II (short ring, same diameter)
-	parts.append(cyl("Saturn_Interstage_SIC_SII", BASE_D / 2 * 0.98, 0.6, rocket_cx, 0.0, z + 0.3))
+	# Interstage (white)
+	_bucket(buckets, "body", cyl("Saturn_Interstage_SIC_SII", BASE_D / 2 * 0.98, 0.6, rocket_cx, 0.0, z + 0.3))
 	z += 0.6
 
-	# S-II second stage
-	parts.append(cyl("Saturn_S_II", BASE_D / 2, STAGE_SII_H - 0.6, rocket_cx, 0.0, z + (STAGE_SII_H - 0.6) / 2))
+	# S-II (white)
+	_bucket(buckets, "body", cyl("Saturn_S_II", BASE_D / 2, STAGE_SII_H - 0.6, rocket_cx, 0.0, z + (STAGE_SII_H - 0.6) / 2))
 	z += STAGE_SII_H - 0.6
 
-	# S-II/S-IVB interstage: tapers from BASE_D to UPPER_D
+	# S-II/S-IVB interstage taper (white)
 	taper_h = 1.2
-	parts.append(cone("Saturn_Interstage_SII_SIVB", BASE_D / 2, UPPER_D / 2, taper_h,
+	_bucket(buckets, "body", cone("Saturn_Interstage_SII_SIVB", BASE_D / 2, UPPER_D / 2, taper_h,
 		rocket_cx, 0.0, z + taper_h / 2))
 	z += taper_h
 
-	# S-IVB third stage
-	parts.append(cyl("Saturn_S_IVB", UPPER_D / 2, STAGE_SIVB_H - taper_h, rocket_cx, 0.0, z + (STAGE_SIVB_H - taper_h) / 2))
+	# S-IVB (white)
+	_bucket(buckets, "body", cyl("Saturn_S_IVB", UPPER_D / 2, STAGE_SIVB_H - taper_h, rocket_cx, 0.0, z + (STAGE_SIVB_H - taper_h) / 2))
 	z += STAGE_SIVB_H - taper_h
 
-	# Instrument Unit
-	parts.append(cyl("Saturn_InstrumentUnit", UPPER_D / 2 * 1.02, STAGE_IU_H, rocket_cx, 0.0, z + STAGE_IU_H / 2))
+	# Instrument Unit (white with black stripe in reality; simplified to white)
+	_bucket(buckets, "body", cyl("Saturn_InstrumentUnit", UPPER_D / 2 * 1.02, STAGE_IU_H, rocket_cx, 0.0, z + STAGE_IU_H / 2))
 	z += STAGE_IU_H
 
-	# Apollo spacecraft assembly: LM adapter (tapers), SM, CM, LES
-	# LM adapter tapers from UPPER_D down to SPACECRAFT_D
+	# Apollo spacecraft assembly
 	adapter_h = SPACECRAFT_H * 0.30
-	parts.append(cone("Apollo_LMAdapter", UPPER_D / 2, SPACECRAFT_D / 2, adapter_h,
+	_bucket(buckets, "body", cone("Apollo_LMAdapter", UPPER_D / 2, SPACECRAFT_D / 2, adapter_h,
 		rocket_cx, 0.0, z + adapter_h / 2))
 	z += adapter_h
-	# Service Module cylinder
 	sm_h = SPACECRAFT_H * 0.32
-	parts.append(cyl("Apollo_ServiceModule", SPACECRAFT_D / 2, sm_h, rocket_cx, 0.0, z + sm_h / 2))
+	_bucket(buckets, "body", cyl("Apollo_ServiceModule", SPACECRAFT_D / 2, sm_h, rocket_cx, 0.0, z + sm_h / 2))
 	z += sm_h
-	# Command Module (conical)
+	# Command Module -- silver-grey heat shield, put in engine bucket for the darker material
 	cm_h = SPACECRAFT_H * 0.14
-	parts.append(cone("Apollo_CommandModule", SPACECRAFT_D / 2, SPACECRAFT_D / 2 * 0.35, cm_h,
+	_bucket(buckets, "engine", cone("Apollo_CommandModule", SPACECRAFT_D / 2, SPACECRAFT_D / 2 * 0.35, cm_h,
 		rocket_cx, 0.0, z + cm_h / 2))
 	z += cm_h
-	# Launch Escape System tower and motor -- the tall spike on top, defining silhouette
+	# LES tower -- white body with the LES-tip motor at top
 	les_h = SPACECRAFT_H * 0.24
-	parts.append(cyl("Apollo_LES", SPACECRAFT_D / 2 * 0.18, les_h, rocket_cx, 0.0, z + les_h / 2))
-	# Small motor nozzle at top
-	parts.append(cone("Apollo_LESTip", SPACECRAFT_D / 2 * 0.10, SPACECRAFT_D / 2 * 0.02, 0.4,
+	_bucket(buckets, "body", cyl("Apollo_LES", SPACECRAFT_D / 2 * 0.18, les_h, rocket_cx, 0.0, z + les_h / 2))
+	# Motor nozzle at very top (dark)
+	_bucket(buckets, "engine", cone("Apollo_LESTip", SPACECRAFT_D / 2 * 0.10, SPACECRAFT_D / 2 * 0.02, 0.4,
 		rocket_cx, 0.0, z + les_h + 0.2))
+
+
+BUCKET_TO_MESH_NAME = {
+	"body":   "SaturnV_Body",     # white rocket body + fins + LM adapter + SM + LES tower
+	"engine": "SaturnV_Engines",  # F-1 bells + Command Module + LES tip (dark grey)
+	"lut":    "SaturnV_LUT",      # LUT tower + crane (red)
+	"ml":     "SaturnV_ML",       # Mobile Launcher + hold-down arms + swing arms (grey)
+}
+
+
+def _join_bucket(name, parts):
+	bpy.ops.object.select_all(action="DESELECT")
+	for p in parts:
+		p.select_set(True)
+	bpy.context.view_layer.objects.active = parts[0]
+	if len(parts) > 1:
+		bpy.ops.object.join()
+	merged = bpy.context.active_object
+	merged.name = name
+	merged.data.name = name
+	# Every bucket keeps its authored world position -- do NOT re-origin, or the
+	# meshes drift apart when placed in Studio at a shared PivotTo. Shared origin
+	# is the entire point of the multi-mesh material split.
+	return merged
 
 
 def build():
 	clear_scene()
-	parts = []
-	build_mobile_launcher(parts)
-	build_saturn_v(parts)
-	build_lut(parts)
+	buckets = {}
+	build_mobile_launcher(buckets)
+	build_saturn_v(buckets)
+	build_lut(buckets)
 
-	bpy.ops.object.select_all(action="DESELECT")
-	for o in parts:
-		o.select_set(True)
-	bpy.context.view_layer.objects.active = parts[0]
-	bpy.ops.object.join()
-
-	merged = bpy.context.active_object
-	merged.name = "SaturnV_LUT"
-	merged.data.name = "SaturnV_LUT"
-	bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-	bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="BOUNDS")
-	merged.location = (0.0, 0.0, 0.0)
+	# Deterministic bucket order so the exported GLB names are stable across runs.
+	objs = []
+	for key in ("body", "engine", "lut", "ml"):
+		if key in buckets and buckets[key]:
+			objs.append(_join_bucket(BUCKET_TO_MESH_NAME[key], buckets[key]))
+	return objs
 
 
-def report(obj):
-	mesh = obj.data
-	tris = sum(max(len(p.vertices) - 2, 0) for p in mesh.polygons)
-	d = obj.dimensions
+def report(objs):
+	total_tris = 0
+	lo = [float("inf")] * 3
+	hi = [float("-inf")] * 3
 
-	print(f"GEN_OBJECT {obj.name}")
-	print(f"GEN_TRIANGLES {tris}")
-	print(f"GEN_VERTICES {len(mesh.vertices)}")
-	print(f"GEN_SIZE_STUDS {d.x:.2f} x {d.y:.2f} x {d.z:.2f}")
+	names = []
+	for o in objs:
+		tris = sum(max(len(p.vertices) - 2, 0) for p in o.data.polygons)
+		total_tris += tris
+		names.append(o.name)
+		d = o.dimensions
+		print(f"GEN_PART {o.name} tris={tris} size={d.x:.2f}x{d.y:.2f}x{d.z:.2f}")
+		if tris > 20000:
+			raise SystemExit(f"FAIL: {o.name} has {tris} triangles, over the 20000 per-mesh cap")
+		for v in o.data.vertices:
+			w = o.matrix_world @ v.co
+			for i in range(3):
+				lo[i] = min(lo[i], w[i])
+				hi[i] = max(hi[i], w[i])
+
+	size = [hi[i] - lo[i] for i in range(3)]
+	print(f"GEN_PARTS {len(objs)}")
+	print(f"GEN_TRIANGLES {total_tris}")
+	print(f"GEN_SIZE_STUDS {size[0]:.2f} x {size[1]:.2f} x {size[2]:.2f}")
 	print(f"GEN_SCALE 1 stud = {FT_PER_STUD:.2f} ft = {FT_PER_STUD * 0.3048:.2f} m")
-	print(f"GEN_ROCKET_HEIGHT_STUDS {ROCKET_H:.2f}  (real 363 ft)")
-	print(f"GEN_LUT_HEIGHT_STUDS {LUT_H:.2f}  (real 446 ft)")
 
-	if tris > 20000:
-		raise SystemExit(f"FAIL: {tris} triangles exceeds the 20000 per-mesh cap")
-	if d.z > ENVELOPE_HEIGHT + 0.5:  # small tolerance for LES tip
-		raise SystemExit(f"FAIL: height {d.z:.2f} exceeds the {ENVELOPE_HEIGHT:.2f} stud envelope")
-	if d.x > SHELL_WIDTH:
-		raise SystemExit(f"FAIL: width {d.x:.2f} overhangs the {SHELL_WIDTH:.2f} stud collision shell")
-	if d.y > SHELL_DEPTH:
-		raise SystemExit(f"FAIL: depth {d.y:.2f} overhangs the {SHELL_DEPTH:.2f} stud collision shell")
+	# Assert multi-mesh split preserved: if a future edit collapsed buckets,
+	# the polychrome pilot silently loses its whole point.
+	expected = {"SaturnV_Body", "SaturnV_Engines", "SaturnV_LUT", "SaturnV_ML"}
+	if set(names) != expected:
+		raise SystemExit(f"FAIL: expected exactly {sorted(expected)}, got {sorted(names)}")
+	print("GEN_SPLIT_OK 4 objects, one per material group")
 
-	# The teaching point: LUT is taller than rocket. Assert it, so a future
-	# scale drift can't quietly reverse that relationship.
+	if size[2] > ENVELOPE_HEIGHT + 0.5:  # small tolerance for LES tip
+		raise SystemExit(f"FAIL: height {size[2]:.2f} exceeds the {ENVELOPE_HEIGHT:.2f} stud envelope")
+	if size[0] > SHELL_WIDTH:
+		raise SystemExit(f"FAIL: width {size[0]:.2f} overhangs the {SHELL_WIDTH:.2f} stud shell")
+	if size[1] > SHELL_DEPTH:
+		raise SystemExit(f"FAIL: depth {size[1]:.2f} overhangs the {SHELL_DEPTH:.2f} stud shell")
+
 	if LUT_H <= ROCKET_H:
-		raise SystemExit(f"FAIL: LUT height {LUT_H:.2f} not greater than rocket {ROCKET_H:.2f} -- real ratio is 446 > 363 ft")
+		raise SystemExit(f"FAIL: LUT height {LUT_H:.2f} not greater than rocket {ROCKET_H:.2f}")
 
-	print(f"GEN_SHELL_MARGIN {SHELL_WIDTH - d.x:.2f} x {SHELL_DEPTH - d.y:.2f} studs")
+	print(f"GEN_SHELL_MARGIN {SHELL_WIDTH - size[0]:.2f} x {SHELL_DEPTH - size[1]:.2f} studs")
 	print("GEN_BUDGET_OK yes")
 	print("GEN_ENVELOPE_OK yes")
 
@@ -340,9 +389,8 @@ def main():
 	if out_path is None:
 		raise SystemExit("usage: ... --python generate.py -- --out <path.glb>")
 
-	build()
-	obj = bpy.context.active_object
-	report(obj)
+	objs = build()
+	report(objs)
 
 	os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
 	bpy.ops.export_scene.gltf(filepath=out_path, export_format="GLB", use_selection=False, export_apply=True)
