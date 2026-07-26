@@ -1,4 +1,4 @@
-"""Generates the Scientist Statues exhibit mesh: Einstein · Tesla · Newton.
+"""Generates the Scientist Statues exhibit mesh: Newton · Tesla · Einstein.
 
 Run headless from the repository root:
 
@@ -9,23 +9,33 @@ Run headless from the repository root:
 Historical portrayals. User's chosen trio for the Hall of Minds, substituted
 for the accuracy doc's original Galileo · Lovelace · Curie:
   - Curie -> Tesla (Q-021: Curie collides with Radiant Pioneer)
-  - Galileo, Lovelace -> Einstein, Newton (user pick: maximum public recognition)
+  - Galileo, Lovelace -> Einstein, Newton (user pick: maximum public
+    recognition)
 
-Two acknowledged trade-offs disclosed in the dossier:
-  - Trio is all-male (Curie was the only globally-famous female alternative,
-    and she's Q-021 blocked)
-  - Both Einstein and Newton have weak associations with Gravity Sovereign
-    (relativity, universal gravitation); neither is famous SOLELY for gravity
-    the way Curie was for radiation, so the identifiability risk is much
-    lower than the Curie/Radiant Pioneer collision
+COMPOSITION: back-to-back hero pose, linear splay.
 
-Sculptures are stylised silhouettes, not portrait-quality. The accuracy doc
-explicitly says "original sculptures informed by separately cleared public-
-domain or openly licensed portraits; no museum endorsement" -- stylisation
-is the correct fidelity level.
+The user supplied a reference image -- a caricature of Tesla and Einstein
+standing back-to-back, each with an outstretched arm holding a glowing
+object -- and asked for that composition with Newton inserted in the middle.
+
+  Tesla (x=-9, yaw -40 deg)  turned left,  orb arm reaching world -X
+  Newton (x=0,  yaw   0 deg)  facing front, apple held forward at waist
+  Einstein (x=+9, yaw +40 deg) turned right, orb arm reaching world +X
+
+POSE TAKEN, CARICATURE STYLE NOT. The reference exaggerates heads and
+features for comic effect. Museum statues of real historical people should
+be dignified; caricaturing them would read as mocking and sits badly against
+the accuracy doc's "historical portrayals" framing. Proportions here stay
+realistic. See README.md.
+
+EXPORTS THREE OBJECTS, not one. The orbs are Neon in Studio while everything
+else is brass, and geometry cannot carry emissive material -- so material
+differentiation requires separate meshes. Same principled split the black
+hole uses; see art/README.md, "splitting for physics is different from
+splitting for budget".
 
 MATERIALS ARE AN ART CHOICE. Real bronze busts would use bronze; brass
-throughout under D-016.
+throughout under D-016, with Neon on the two orbs.
 """
 
 import math
@@ -53,8 +63,38 @@ MINI_PLINTH_H = 2.5
 STATUE_H = 8.5   # standing figure height above mini-plinth top
 STATUE_R = 0.9   # torso radius
 
-# Slot positions along X for the three statues (equally spaced)
-SLOT_X = [-9.0, 0.0, 9.0]  # Newton (left), Tesla (centre), Einstein (right)
+# --- composition ------------------------------------------------------------
+
+# Slot positions along X, and the yaw each figure is turned by.
+#
+# Figures are BUILT facing -Y (toward the viewer). A Z-rotation theta maps the
+# facing vector (0,-1) to (sin theta, -cos theta). So:
+#   theta = -40 deg -> (-0.64, -0.77)  left and toward viewer   (Tesla)
+#   theta =   0 deg -> ( 0.00, -1.00)  straight at viewer       (Newton)
+#   theta = +40 deg -> (+0.64, -0.77)  right and toward viewer  (Einstein)
+SLOT_TESLA_X, YAW_TESLA = -9.0, math.radians(-40.0)
+SLOT_NEWTON_X, YAW_NEWTON = 0.0, math.radians(0.0)
+SLOT_EINSTEIN_X, YAW_EINSTEIN = 9.0, math.radians(40.0)
+
+# The outstretched arm is built in figure-LOCAL space along a 45 degree
+# forward-outward diagonal. After each figure's yaw this lands almost exactly
+# on the world X axis, putting both orbs at the outer extremes of the
+# composition (which is what the reference framing does):
+#
+#   Tesla:    R(-40) . (-0.707, -0.707) ~= (-0.997, -0.087)  -> world -X
+#   Einstein: R(+40) . (+0.707, -0.707) ~= (+0.997, -0.087)  -> world +X
+ARM_DIAG = math.sqrt(0.5)  # 0.707
+
+ARM_LENGTH = 2.6
+ARM_R = 0.28
+HAND_R = 0.34
+ORB_R = 0.78
+
+# Object names -- the export asserts on these, because if the orbs ever get
+# joined into the main mesh they silently lose the ability to be Neon.
+NAME_MAIN = "ScientistStatues"
+NAME_TESLA_ORB = "Statues_TeslaOrb"
+NAME_EINSTEIN_ORB = "Statues_EinsteinOrb"
 
 
 def clear_scene():
@@ -96,140 +136,333 @@ def sphere(name, r, x=0.0, y=0.0, z=0.0, segments=14, rings=10):
 	return o
 
 
+def join_as(name, parts):
+	"""Join a list of objects into one named object and return it."""
+	bpy.ops.object.select_all(action="DESELECT")
+	for p in parts:
+		p.select_set(True)
+	bpy.context.view_layer.objects.active = parts[0]
+	if len(parts) > 1:
+		bpy.ops.object.join()
+	merged = bpy.context.active_object
+	merged.name = name
+	return merged
+
+
+def place_figure(obj, slot_x, yaw):
+	"""Rotate a figure built at origin by `yaw` about Z, then move to its slot.
+
+	Only X and Y are set. Z is left alone deliberately: join() leaves the merged
+	object's origin wherever parts[0] happened to sit (well above the ground,
+	since parts[0] is a leg or robe centred at mid-height), so forcing
+	location.z = 0 would drag the whole figure down by that amount and sink it
+	through the plinth. Rotation about Z still spins the figure on the spot,
+	because the origin's XY is (0, 0).
+	"""
+	obj.rotation_euler = (0.0, 0.0, yaw)
+	obj.location.x = slot_x
+	obj.location.y = 0.0
+	bpy.context.view_layer.objects.active = obj
+	bpy.ops.object.select_all(action="DESELECT")
+	obj.select_set(True)
+	bpy.ops.object.transform_apply(location=True, rotation=True, scale=False)
+	return obj
+
+
+def cyl_along(name, r, p0, p1, verts=10):
+	"""Cylinder spanning p0 -> p1, oriented by axis-angle.
+
+	Uses the same construction as the B-DNA generator. An earlier version here
+	built the rotation from euler (0, pitch, yaw + pi/2), which is wrong:
+	Blender's XYZ euler composes as Rz @ Ry, so +Z maps to
+	(sin p * cos(yaw+90), sin p * sin(yaw+90), cos p) -- a 90 degree error in
+	the horizontal plane. The arms pointed sideways and read as detached stubs
+	while the hands and props (computed from the direction vector directly)
+	sat correctly, so the figures looked broken.
+	"""
+	import mathutils
+	dx, dy, dz = p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]
+	length = math.sqrt(dx * dx + dy * dy + dz * dz)
+	if length < 1e-6:
+		return None
+	mid = ((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2, (p0[2] + p1[2]) / 2)
+	o = cyl(name, r, length, mid[0], mid[1], mid[2], verts=verts)
+	direction = mathutils.Vector((dx, dy, dz)).normalized()
+	up = mathutils.Vector((0.0, 0.0, 1.0))
+	dot = max(-1.0, min(1.0, up.dot(direction)))
+	if dot > 0.9999:
+		pass
+	elif dot < -0.9999:
+		o.rotation_euler = (math.pi, 0.0, 0.0)
+	else:
+		axis = up.cross(direction).normalized()
+		o.rotation_euler = mathutils.Matrix.Rotation(math.acos(dot), 4, axis).to_euler()
+	return o
+
+
+def _unit(v):
+	mag = math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+	return (v[0] / mag, v[1] / mag, v[2] / mag)
+
+
+def build_bent_arm(parts, shoulder_z, side, name_prefix,
+		upper_dir, fore_dir, upper_len=1.5, fore_len=1.8, prop_gap=None):
+	"""Two-segment arm with an elbow: shoulder -> elbow -> hand.
+
+	A single straight cylinder reads as a broom handle; the bend makes the
+	pose read as a deliberate gesture, which is the whole point of this
+	composition. Triangle cost is trivial (~400 tri per figure) against a
+	20,000 cap.
+
+	`side` is -1 (arm goes local -X) or +1 (local +X). Direction tuples are
+	given in local space with their X component already signed by the caller.
+
+	Returns the prop centre, just beyond the hand along the forearm direction.
+	"""
+	u = _unit(upper_dir)
+	f = _unit(fore_dir)
+
+	shoulder = (side * STATUE_R * 0.85, 0.0, shoulder_z)
+	elbow = (shoulder[0] + u[0] * upper_len,
+		shoulder[1] + u[1] * upper_len,
+		shoulder[2] + u[2] * upper_len)
+	hand = (elbow[0] + f[0] * fore_len,
+		elbow[1] + f[1] * fore_len,
+		elbow[2] + f[2] * fore_len)
+
+	seg = cyl_along(f"{name_prefix}_UpperArm", ARM_R, shoulder, elbow)
+	if seg:
+		parts.append(seg)
+	parts.append(sphere(f"{name_prefix}_Elbow", ARM_R * 1.1, elbow[0], elbow[1], elbow[2], segments=8, rings=6))
+	seg = cyl_along(f"{name_prefix}_Forearm", ARM_R * 0.9, elbow, hand)
+	if seg:
+		parts.append(seg)
+	parts.append(sphere(f"{name_prefix}_Hand", HAND_R, hand[0], hand[1], hand[2], segments=10, rings=6))
+
+	gap = prop_gap if prop_gap is not None else (HAND_R + ORB_R * 0.6)
+	return (hand[0] + f[0] * gap, hand[1] + f[1] * gap, hand[2] + f[2] * gap + ORB_R * 0.2)
+
+
+def add_facing_cues(parts, prefix, torso_z, torso_r, torso_h, head_z, head_r):
+	"""Chest plate and nose on the figure's local front (-Y).
+
+	Without these the splay is invisible: the torsos are rotationally
+	symmetric cylinders, so a yaw about Z changes nothing you can see, and
+	only the arms betray that the figures are turned. A flat chest and a nose
+	give the eye a facing direction, which is what sells the back-to-back
+	reading in the reference composition.
+	"""
+	parts.append(box(f"{prefix}_Chest", torso_r * 1.5, 0.25, torso_h * 0.6,
+		0.0, -torso_r * 0.92, torso_z))
+	parts.append(sphere(f"{prefix}_Nose", head_r * 0.24,
+		0.0, -head_r * 0.92, head_z, segments=6, rings=5))
+
+
+def build_mini_plinth(parts, cx, name):
+	"""Axis-aligned pedestal. Deliberately NOT rotated with the figure -- a
+	statue turned on a square pedestal is how real museum statues sit."""
+	top_z = SHARED_PLINTH_H + 0.4
+	parts.append(box(name, MINI_PLINTH_W, MINI_PLINTH_D, MINI_PLINTH_H, cx, 0.0, top_z + MINI_PLINTH_H / 2))
+	return top_z + MINI_PLINTH_H
+
+
 def build_shared_plinth(parts):
 	parts.append(box("SharedPlinth", SHARED_PLINTH_W, SHARED_PLINTH_D, SHARED_PLINTH_H,
 		0.0, 0.0, SHARED_PLINTH_H / 2))
-	# Decorative top rim
 	parts.append(box("SharedPlinthRim", SHARED_PLINTH_W + 0.6, SHARED_PLINTH_D + 0.6, 0.4,
 		0.0, 0.0, SHARED_PLINTH_H))
 
 
-def build_mini_plinth(parts, cx, name):
-	top_z = SHARED_PLINTH_H + 0.4
-	parts.append(box(name, MINI_PLINTH_W, MINI_PLINTH_D, MINI_PLINTH_H, cx, 0.0, top_z + MINI_PLINTH_H / 2))
-	return top_z + MINI_PLINTH_H  # returns statue base Z
+# --- figures, all built at ORIGIN facing -Y ---------------------------------
 
+def build_newton_figure(base_z):
+	"""Isaac Newton (1643-1727): scholar's robe, long Baroque wig, apple held
+	forward in an open palm at waist height. Reference: Kneller 1689 portrait.
 
-def build_newton(parts, cx):
-	"""Isaac Newton (1643-1727): scholar's robe (Kneller 1689 portrait). Long
-	wig, formal collar, holding a prism at his side."""
-	base_z = build_mini_plinth(parts, cx, "Newton_Plinth")
-	# Robe -- cone flaring outward at bottom for a floor-length effect
+	Newton is the centre figure and faces straight out, so his arm reaches
+	forward rather than outward -- he shouldn't compete with the two orbs.
+	"""
+	parts = []
 	robe_h = STATUE_H * 0.62
-	parts.append(cone("Newton_Robe", STATUE_R * 1.4, STATUE_R * 0.95, robe_h,
-		cx, 0.0, base_z + robe_h / 2))
-	# Torso -- upper body cylinder
+	parts.append(cone("Newton_Robe", STATUE_R * 1.4, STATUE_R * 0.95, robe_h, 0.0, 0.0, base_z + robe_h / 2))
 	torso_h = STATUE_H * 0.22
-	parts.append(cyl("Newton_Torso", STATUE_R * 0.95, torso_h,
-		cx, 0.0, base_z + robe_h + torso_h / 2))
-	# Head -- with the long Baroque wig (larger than head sphere)
+	parts.append(cyl("Newton_Torso", STATUE_R * 0.95, torso_h, 0.0, 0.0, base_z + robe_h + torso_h / 2))
 	head_r = STATUE_R * 0.75
-	parts.append(sphere("Newton_Head", head_r,
-		cx, 0.0, base_z + robe_h + torso_h + head_r * 0.9))
-	# Long wig -- flared cone hanging below the head
+	shoulder_z = base_z + robe_h + torso_h * 0.75
+	parts.append(sphere("Newton_Head", head_r, 0.0, 0.0, base_z + robe_h + torso_h + head_r * 0.9))
 	wig_h = STATUE_H * 0.14
 	parts.append(cone("Newton_Wig", head_r * 1.15, head_r * 0.7, wig_h,
-		cx, 0.0, base_z + robe_h + torso_h - wig_h / 2 + head_r * 0.3))
-	# Prism at his side -- small triangular cross-section (rendered as thin box)
-	parts.append(box("Newton_Prism", 0.55, 0.55, 1.2,
-		cx + STATUE_R * 1.7, 0.0, base_z + robe_h * 0.5,
-		rot=(math.radians(15.0), 0.0, math.radians(15.0))))
+		0.0, 0.0, base_z + robe_h + torso_h - wig_h / 2 + head_r * 0.3))
+	add_facing_cues(parts, "Newton", base_z + robe_h + torso_h / 2, STATUE_R * 0.95, torso_h,
+		base_z + robe_h + torso_h + head_r * 0.9, head_r)
+
+	# Arm angled forward-and-outward toward viewer-left, palm up.
+	#
+	# Newton's yaw is 0, so a straight-forward arm points directly at the
+	# camera and foreshortens to nothing -- the first render showed the apple
+	# as a sphere apparently stuck to his chest. Angling it out to local -X
+	# (the empty gap between Newton and Tesla, since Tesla's own arm reaches
+	# the far side) makes the gesture read from the arena's approach direction.
+	apple_pos = build_bent_arm(parts, shoulder_z, side=-1, name_prefix="Newton",
+		upper_dir=(-0.42, -0.38, -0.82), fore_dir=(-0.46, -0.80, 0.38),
+		upper_len=1.4, fore_len=1.7, prop_gap=HAND_R + 0.32)
+
+	# Apple -- solid brass, joins the main mesh (a physical object, not a
+	# phenomenon, so it does not glow)
+	parts.append(sphere("Newton_Apple", 0.5, apple_pos[0], apple_pos[1], apple_pos[2], segments=12, rings=8))
+	parts.append(cyl("Newton_AppleStem", 0.07, 0.35,
+		apple_pos[0], apple_pos[1], apple_pos[2] + 0.5, verts=6))
+	return parts, None
 
 
-def build_tesla(parts, cx):
-	"""Nikola Tesla (1856-1943): three-piece suit (Sarony 1893 portrait). Slim
-	standing figure, hand on a small Tesla coil at his side."""
-	base_z = build_mini_plinth(parts, cx, "Tesla_Plinth")
-	# Trousers -- narrower cylinder for legs
+def build_tesla_figure(base_z):
+	"""Nikola Tesla (1856-1943): three-piece suit, groomed hair, outstretched
+	arm holding a lightning orb. Reference: Sarony 1893 portrait.
+
+	Outward arm on local -X so that after yaw -40 deg it reaches world -X.
+	"""
+	parts = []
 	leg_h = STATUE_H * 0.42
-	parts.append(cyl("Tesla_Legs", STATUE_R * 0.85, leg_h,
-		cx, 0.0, base_z + leg_h / 2))
-	# Suit jacket -- slightly wider torso
+	parts.append(cyl("Tesla_Legs", STATUE_R * 0.85, leg_h, 0.0, 0.0, base_z + leg_h / 2))
 	torso_h = STATUE_H * 0.36
-	parts.append(cyl("Tesla_Suit", STATUE_R * 1.05, torso_h,
-		cx, 0.0, base_z + leg_h + torso_h / 2))
-	# Head
+	parts.append(cyl("Tesla_Suit", STATUE_R * 1.05, torso_h, 0.0, 0.0, base_z + leg_h + torso_h / 2))
 	head_r = STATUE_R * 0.7
-	parts.append(sphere("Tesla_Head", head_r,
-		cx, 0.0, base_z + leg_h + torso_h + head_r * 0.9))
-	# Formal hair -- neat, small dome on top of head
-	parts.append(sphere("Tesla_Hair", head_r * 0.85,
-		cx, 0.0, base_z + leg_h + torso_h + head_r * 1.35))
-	# Small Tesla coil at side -- vertical cylinder with torus top
-	coil_h = STATUE_H * 0.25
-	coil_x = cx + STATUE_R * 1.6
-	parts.append(cyl("Tesla_MiniCoil", 0.4, coil_h,
-		coil_x, 0.0, base_z + coil_h / 2))
-	bpy.ops.mesh.primitive_torus_add(major_radius=0.7, minor_radius=0.2,
-		major_segments=16, minor_segments=6, location=(coil_x, 0.0, base_z + coil_h + 0.15))
-	t = bpy.context.active_object
-	t.name = "Tesla_MiniCoilTop"
-	parts.append(t)
+	shoulder_z = base_z + leg_h + torso_h * 0.82
+	parts.append(sphere("Tesla_Head", head_r, 0.0, 0.0, base_z + leg_h + torso_h + head_r * 0.9))
+	parts.append(sphere("Tesla_Hair", head_r * 0.85, 0.0, 0.0, base_z + leg_h + torso_h + head_r * 1.35))
+	add_facing_cues(parts, "Tesla", base_z + leg_h + torso_h / 2, STATUE_R * 1.05, torso_h,
+		base_z + leg_h + torso_h + head_r * 0.9, head_r)
+
+	# Bent arm reaching forward-outward. Net shoulder->hand direction is a
+	# ~36 degree local diagonal, which after the -40 degree yaw lands at
+	# world (-0.998, +0.069) -- essentially straight out along -X.
+	orb_pos = build_bent_arm(parts, shoulder_z, side=-1, name_prefix="Tesla",
+		upper_dir=(-0.60, -0.35, -0.72), fore_dir=(-0.75, -0.62, 0.25))
+	return parts, orb_pos
 
 
-def build_einstein(parts, cx):
-	"""Albert Einstein (1879-1955): casual clothes with iconic wild hair,
-	holding a notebook or chalkboard."""
-	base_z = build_mini_plinth(parts, cx, "Einstein_Plinth")
-	# Trousers
+def build_einstein_figure(base_z):
+	"""Albert Einstein (1879-1955): casual clothes, iconic wild hair,
+	outstretched arm holding a galaxy orb.
+
+	Outward arm on local +X so that after yaw +40 deg it reaches world +X.
+	"""
+	parts = []
 	leg_h = STATUE_H * 0.40
-	parts.append(cyl("Einstein_Legs", STATUE_R * 0.9, leg_h,
-		cx, 0.0, base_z + leg_h / 2))
-	# Casual shirt / sweater -- slightly baggy torso
+	parts.append(cyl("Einstein_Legs", STATUE_R * 0.9, leg_h, 0.0, 0.0, base_z + leg_h / 2))
 	torso_h = STATUE_H * 0.38
-	parts.append(cyl("Einstein_Torso", STATUE_R * 1.1, torso_h,
-		cx, 0.0, base_z + leg_h + torso_h / 2))
-	# Head
+	parts.append(cyl("Einstein_Torso", STATUE_R * 1.1, torso_h, 0.0, 0.0, base_z + leg_h + torso_h / 2))
 	head_r = STATUE_R * 0.75
-	parts.append(sphere("Einstein_Head", head_r,
-		cx, 0.0, base_z + leg_h + torso_h + head_r * 0.9))
-	# WILD HAIR -- larger sphere on top, plus a few spikes
-	parts.append(sphere("Einstein_Hair", head_r * 1.25,
-		cx, 0.0, base_z + leg_h + torso_h + head_r * 1.35))
-	# Chalkboard at his side -- flat panel
-	board_x = cx + STATUE_R * 1.7
-	parts.append(box("Einstein_Chalkboard", 0.3, 1.6, 1.4,
-		board_x, 0.0, base_z + leg_h * 1.1))
+	shoulder_z = base_z + leg_h + torso_h * 0.82
+	parts.append(sphere("Einstein_Head", head_r, 0.0, 0.0, base_z + leg_h + torso_h + head_r * 0.9))
+	# Wild hair -- the one exaggeration kept, because it is a real and
+	# documented feature of the man rather than a caricature invention
+	parts.append(sphere("Einstein_Hair", head_r * 1.25, 0.0, 0.0, base_z + leg_h + torso_h + head_r * 1.35))
+	add_facing_cues(parts, "Einstein", base_z + leg_h + torso_h / 2, STATUE_R * 1.1, torso_h,
+		base_z + leg_h + torso_h + head_r * 0.9, head_r)
+
+	# Mirror of Tesla's arm; after the +40 degree yaw it lands at world
+	# (+0.998, +0.069) -- straight out along +X.
+	orb_pos = build_bent_arm(parts, shoulder_z, side=+1, name_prefix="Einstein",
+		upper_dir=(0.60, -0.35, -0.72), fore_dir=(0.75, -0.62, 0.25))
+	return parts, orb_pos
 
 
 def build():
 	clear_scene()
-	parts = []
-	build_shared_plinth(parts)
-	build_newton(parts, SLOT_X[0])
-	build_tesla(parts, SLOT_X[1])
-	build_einstein(parts, SLOT_X[2])
 
-	bpy.ops.object.select_all(action="DESELECT")
-	for o in parts:
-		o.select_set(True)
-	bpy.context.view_layer.objects.active = parts[0]
-	bpy.ops.object.join()
+	main_parts = []
+	build_shared_plinth(main_parts)
 
-	merged = bpy.context.active_object
-	merged.name = "ScientistStatues"
-	merged.data.name = "ScientistStatues"
+	# Pedestals stay axis-aligned; only the figures rotate.
+	base_z = build_mini_plinth(main_parts, SLOT_TESLA_X, "Tesla_Plinth")
+	build_mini_plinth(main_parts, SLOT_NEWTON_X, "Newton_Plinth")
+	build_mini_plinth(main_parts, SLOT_EINSTEIN_X, "Einstein_Plinth")
+
+	orb_objects = []
+
+	# Tesla
+	tesla_parts, tesla_orb_pos = build_tesla_figure(base_z)
+	tesla_fig = join_as("TeslaFigure", tesla_parts)
+	place_figure(tesla_fig, SLOT_TESLA_X, YAW_TESLA)
+	main_parts.append(tesla_fig)
+
+	# Newton (no orb)
+	newton_parts, _ = build_newton_figure(base_z)
+	newton_fig = join_as("NewtonFigure", newton_parts)
+	place_figure(newton_fig, SLOT_NEWTON_X, YAW_NEWTON)
+	main_parts.append(newton_fig)
+
+	# Einstein
+	einstein_parts, einstein_orb_pos = build_einstein_figure(base_z)
+	einstein_fig = join_as("EinsteinFigure", einstein_parts)
+	place_figure(einstein_fig, SLOT_EINSTEIN_X, YAW_EINSTEIN)
+	main_parts.append(einstein_fig)
+
+	# Main brass mesh
+	main = join_as(NAME_MAIN, main_parts)
+	main.data.name = NAME_MAIN
 	bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-	bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY", center="BOUNDS")
-	merged.location = (0.0, 0.0, 0.0)
+
+	# --- orbs, as SEPARATE objects so they can be Neon in Studio ------------
+	# Their local positions were computed pre-rotation, so apply the same
+	# yaw + slot translation the figure got.
+	def world_orb(local_pos, slot_x, yaw, name, r):
+		lx, ly, lz = local_pos
+		wx = lx * math.cos(yaw) - ly * math.sin(yaw) + slot_x
+		wy = lx * math.sin(yaw) + ly * math.cos(yaw)
+		o = sphere(name, r, wx, wy, lz, segments=18, rings=12)
+		o.data.name = name
+		bpy.ops.object.shade_smooth()
+		return o
+
+	orb_objects.append(world_orb(tesla_orb_pos, SLOT_TESLA_X, YAW_TESLA, NAME_TESLA_ORB, ORB_R))
+	orb_objects.append(world_orb(einstein_orb_pos, SLOT_EINSTEIN_X, YAW_EINSTEIN, NAME_EINSTEIN_ORB, ORB_R))
+
+	return [main] + orb_objects
 
 
-def report(obj):
-	mesh = obj.data
-	tris = sum(max(len(p.vertices) - 2, 0) for p in mesh.polygons)
-	d = obj.dimensions
-	print(f"GEN_OBJECT {obj.name}")
-	print(f"GEN_TRIANGLES {tris}")
-	print(f"GEN_SIZE_STUDS {d.x:.2f} x {d.y:.2f} x {d.z:.2f}")
-	if tris > 20000:
-		raise SystemExit(f"FAIL: {tris} tri exceeds 20000")
-	if d.z > ENVELOPE_HEIGHT:
-		raise SystemExit(f"FAIL: height {d.z:.2f} exceeds envelope")
-	if d.x > SHELL_WIDTH:
-		raise SystemExit(f"FAIL: width {d.x:.2f} overhangs shell {SHELL_WIDTH:.2f}")
-	if d.y > SHELL_DEPTH:
-		raise SystemExit(f"FAIL: depth {d.y:.2f} overhangs shell {SHELL_DEPTH:.2f}")
-	print(f"GEN_SHELL_MARGIN {SHELL_WIDTH - d.x:.2f} x {SHELL_DEPTH - d.y:.2f}")
+def report(objs):
+	total_tris = 0
+	lo = [float("inf")] * 3
+	hi = [float("-inf")] * 3
+
+	names = []
+	for o in objs:
+		tris = sum(max(len(p.vertices) - 2, 0) for p in o.data.polygons)
+		total_tris += tris
+		names.append(o.name)
+		d = o.dimensions
+		print(f"GEN_PART {o.name} tris={tris} size={d.x:.2f}x{d.y:.2f}x{d.z:.2f}")
+		if tris > 20000:
+			raise SystemExit(f"FAIL: {o.name} has {tris} triangles, over the 20000 per-mesh cap")
+		for v in o.data.vertices:
+			w = o.matrix_world @ v.co
+			for i in range(3):
+				lo[i] = min(lo[i], w[i])
+				hi[i] = max(hi[i], w[i])
+
+	size = [hi[i] - lo[i] for i in range(3)]
+	print(f"GEN_PARTS {len(objs)}")
+	print(f"GEN_TRIANGLES {total_tris}")
+	print(f"GEN_SIZE_STUDS {size[0]:.2f} x {size[1]:.2f} x {size[2]:.2f}")
+
+	# The orbs MUST stay separate objects. If a future edit joins them into the
+	# main mesh they silently lose the ability to carry a Neon material, and
+	# the exhibit ships with two dead brass balls instead of glowing orbs.
+	expected = {NAME_MAIN, NAME_TESLA_ORB, NAME_EINSTEIN_ORB}
+	if set(names) != expected:
+		raise SystemExit(f"FAIL: expected exactly {sorted(expected)}, got {sorted(names)}")
+	print("GEN_SPLIT_OK 3 objects, orbs separate for Neon")
+
+	if size[2] > ENVELOPE_HEIGHT:
+		raise SystemExit(f"FAIL: height {size[2]:.2f} exceeds envelope {ENVELOPE_HEIGHT:.2f}")
+	if size[0] > SHELL_WIDTH:
+		raise SystemExit(f"FAIL: width {size[0]:.2f} overhangs shell {SHELL_WIDTH:.2f}")
+	if size[1] > SHELL_DEPTH:
+		raise SystemExit(f"FAIL: depth {size[1]:.2f} overhangs shell {SHELL_DEPTH:.2f}")
+
+	print(f"GEN_SHELL_MARGIN {SHELL_WIDTH - size[0]:.2f} x {SHELL_DEPTH - size[1]:.2f}")
 	print("GEN_BUDGET_OK yes")
 	print("GEN_ENVELOPE_OK yes")
 
@@ -243,9 +476,8 @@ def main():
 			out_path = rest[rest.index("--out") + 1]
 	if out_path is None:
 		raise SystemExit("usage: ... --python generate.py -- --out <path.glb>")
-	build()
-	obj = bpy.context.active_object
-	report(obj)
+	objs = build()
+	report(objs)
 	os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
 	bpy.ops.export_scene.gltf(filepath=out_path, export_format="GLB", use_selection=False, export_apply=True)
 	print(f"GEN_WROTE {out_path}")

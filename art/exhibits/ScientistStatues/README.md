@@ -1,56 +1,98 @@
-# Scientist Statues — Einstein · Tesla · Newton — dossier
+# Scientist Statues — Tesla · Newton · Einstein — dossier
 
-Historical portrayals. Part of the 2026-07-26 final-three batch.
-
-**User's chosen trio, replacing the accuracy doc's original Galileo · Lovelace · Curie.**
+Historical portrayals. Part of the 2026-07-26 final-three batch, **reposed** the same day to a back-to-back hero composition at the user's request.
 
 | Field | Value |
 |---|---|
 | Internal Studio identity | `TheOmniscienceColiseum.ExhibitSectors.Northwest_HallOfMinds.ScientistStatues` |
-| Visible name (pending rename) | **ISAAC NEWTON · NIKOLA TESLA · ALBERT EINSTEIN** |
+| Visible name (pending rename) | **NIKOLA TESLA · ISAAC NEWTON · ALBERT EINSTEIN** — left-to-right, matching the statues |
 | Class | Historical portrayals — stylised silhouettes, not portrait-quality sculpts |
-| Geometry | 2,016 triangles, 30.60 × 8.60 × 14.82 studs, one `MeshPart` |
+| Geometry | 3,656 triangles across **3 objects**, 30.60 × 8.60 × 14.82 studs |
 | Rights | Original geometry, informed by public-domain portraits. Ledger row `REF-EXH-024` |
 | Review | **UNSIGNED** |
 
-## The trio
+## Composition — back-to-back hero pose, linear splay
 
-Three standing figures on a shared plinth, each on their own mini-pedestal. Bust-on-plinth museum scale (~8.5 studs tall including plinth), not full-height. Left to right:
+The user supplied a reference image (a caricature of Tesla and Einstein standing back-to-back, each with an outstretched arm holding a glowing object) and asked for that composition with Newton inserted in the middle.
 
-- **Isaac Newton** (1643–1727) — scholar's robe (Baroque academic style), long formal wig, prism at his side. Reference: Godfrey Kneller's 1689 portrait, public domain.
-- **Nikola Tesla** (1856–1943) — early-20th-century three-piece suit, formal groomed hair, small Tesla coil at his side (linking to the TESLA COIL APPARATUS in the Energy sector). Reference: Napoleon Sarony's 1893 portrait, public domain.
-- **Albert Einstein** (1879–1955) — casual clothes, iconic wild hair, chalkboard at his side. Reference: iconic 1930s-1940s portraits, most in the public domain (specific photograph to be picked before ship — earlier photographs are safer for rights).
+| Figure | Slot X | Yaw | Arm reaches | Prop |
+|---|---:|---:|---|---|
+| **Nikola Tesla** | −9 | −40° | world **−X** (far left) | Neon lightning orb |
+| **Isaac Newton** | 0 | 0° | forward-left, raised | solid brass apple |
+| **Albert Einstein** | +9 | +40° | world **+X** (far right) | Neon galaxy orb |
 
-## User decision rationale (per plan)
+Figures are built facing −Y then yawed about Z. A Z-rotation θ maps the facing vector `(0,−1)` to `(sin θ, −cos θ)`, so −40° turns Tesla left-and-toward-viewer and +40° turns Einstein right-and-toward-viewer. Each outstretched arm is built on a local forward-outward diagonal whose net shoulder→hand direction, after the yaw, lands within 4° of the world X axis — putting both orbs at the outer extremes of the composition, as the reference framing does.
 
-**Curie → Tesla.** Marie Curie collides with the Radiant Pioneer character (radiation-and-decay theme), failing the project's five-unprompted-testers identifiability test. Tesla is comparably famous and doesn't collide with any character. Note: the museum already has a **TESLA COIL APPARATUS** in the Southeast Energy sector — this trio honours Tesla the person *in addition to* honouring his invention elsewhere, a standard museum pattern.
+**Mini-plinths stay axis-aligned.** Only the figures rotate. A statue turned on a square pedestal is how real museum statues sit; rotating the pedestal too reads as sloppy.
 
-**Galileo, Lovelace → Einstein, Newton.** User chose maximum public recognition. Both Einstein and Newton are among the most publicly-famous scientists ever.
+**Arms are bent at the elbow** (shoulder → elbow → hand). A single straight cylinder reads as a broom handle; the bend makes the pose read as a deliberate gesture, which is the entire point of this composition. Cost is ~400 triangles per figure against a 20,000 cap.
 
-## Two things flagged in the plan and worth restating
+**Chest plates and noses** were added to all three figures. Without them the splay is invisible — the torsos are rotationally symmetric cylinders, so a yaw about Z changes nothing the eye can detect, and only the arms betray that the figures are turned.
 
-**1. The trio is all-male.** Dropping Lovelace removes the accuracy doc's only female-scientist representation. Marie Curie was the only globally-famous female alternative, and she's Q-021 blocked. This is a user-informed decision, not an oversight. If a future reviewer wants female representation restored, options at the "less famous but real" tier are Rosalind Franklin (DNA) or Jane Goodall (primatology, still living).
+## Three-object export — required for the Neon orbs
 
-**2. Einstein and Newton both have weak associations with Gravity Sovereign.** Einstein = general relativity, Newton = universal gravitation. Neither is famous *solely* for gravity — Einstein for E=mc², photoelectric effect, Brownian motion; Newton for calculus, optics, laws of motion — so the identifiability risk is much lower than the Curie/Radiant Pioneer conflict that got Curie substituted out. User accepted this trade knowing the concern.
+| Object | Contents | Studio material |
+|---|---|---|
+| `ScientistStatues` | shared plinth + 3 pedestals + 3 figures + Newton's apple | Metal, brass |
+| `Statues_TeslaOrb` | Tesla's lightning orb | **Neon**, pale blue-white |
+| `Statues_EinsteinOrb` | Einstein's galaxy orb | **Neon**, warm amber |
 
-## What is accurate
+Geometry cannot carry emissive material, so material differentiation requires separate meshes — the same principled split the black hole uses. See `art/README.md`: *"splitting for physics is different from splitting for budget."* At 3,656 triangles this is nowhere near the cap; the split is purely about materials.
 
-- **Three distinct silhouettes** with era-appropriate clothing (Baroque robe, Victorian suit, mid-20th-century casual).
-- **Identifying props** for each figure link to a defining aspect of their work (prism for Newton's optics, mini coil for Tesla's invention, chalkboard for Einstein's theoretical work).
-- **Historical death dates > 70 years** for all three, so iconic photographs are in the public domain in most jurisdictions.
+**The generator asserts on this.** If a future edit joins the orbs into the main mesh they would silently lose the ability to be Neon and the exhibit would ship with two dead brass balls. `GEN_SPLIT_OK` fails the build rather than letting that through.
+
+Placement is therefore a `ProductionMesh` **Model** containing three MeshParts — the black-hole pattern, which the existing placement code already handles.
+
+## Why this trio (user decisions)
+
+**Curie → Tesla.** Marie Curie collides with the Radiant Pioneer character (radiation-and-decay theme), failing the project's five-unprompted-testers identifiability test. Tesla is comparably famous and collides with no character. Note the museum already has a **TESLA COIL APPARATUS** in the Energy sector — this honours Tesla the person *in addition to* his invention, a standard museum pattern.
+
+**Galileo, Lovelace → Einstein, Newton.** User chose maximum public recognition.
+
+**Two concerns the user accepted knowingly:**
+
+1. **The trio is all-male.** Dropping Lovelace removes the accuracy doc's only female-scientist representation. Curie was the only globally-famous female alternative and she is Q-021 blocked. If a reviewer wants representation restored, the next tier is Rosalind Franklin or Jane Goodall.
+2. **Einstein and Newton both have weak Gravity Sovereign associations** (general relativity, universal gravitation). Neither is famous *solely* for gravity — Einstein for E=mc², the photoelectric effect, Brownian motion; Newton for calculus, optics, laws of motion — so the risk is far below the Curie/Radiant Pioneer collision that got Curie substituted out.
+
+## Rights — the pose is fine, the style is not
+
+The reference image is a **caricature illustration with unverified rights**. Two separate things:
+
+- **The pose is fine to use.** Compositional ideas — a back-to-back stance, an outstretched arm holding a signature object — are not copyrightable. This is original low-poly geometry, not a tracing. No pixel of the reference ships.
+- **The caricature style was deliberately not copied.** The reference exaggerates heads and features for comic effect. Museum statues of real historical people should be dignified; caricaturing them would read as mocking and sits badly against the accuracy doc's "historical portrayals" framing. Proportions here stay realistic.
+
+The one exaggeration kept is **Einstein's wild hair**, because that is a real and documented feature of the man rather than a caricature invention.
+
+Portrait references for silhouette guidance (public domain): Newton — Godfrey Kneller, 1689. Tesla — Napoleon Sarony, 1893. Einstein — iconic 1930s–40s photographs, specific image still to be confirmed for rights.
 
 ## What is interpretation
 
-- **Materials.** Real bronze busts use bronze; rendered in brass under D-016.
-- **Silhouettes are stylised**, not portrait sculpts. Each figure is 4-6 primitive shapes: torso + head + hair/wig + prop + plinth. Reads as "a scientist statue" at gameplay distance, not "recognisable person by face".
-- **Newton's wig reads a bit chess-piece-like** from certain angles. Adequate for a museum statue trio; a production pass could add carved detail.
-- **No inscribed names on the plinths.** Real museums identify statues with plaques below. The exhibit's own stone (`ISAAC NEWTON · NIKOLA TESLA · ALBERT EINSTEIN`) covers this; individual name plaques on each mini-plinth are a future enhancement.
-- **Fixed pose.** All three stand in similar upright stances. Real museum statues have distinctive poses per figure; simplified here.
+- **Materials.** Real bronze busts use bronze; brass here under D-016, with Neon on the two orbs.
+- **Silhouettes are stylised** — each figure is 8–12 primitives. Reads as "a scientist statue" at gameplay distance, not "recognisable by face".
+- **Fixed pose**, no individual name plaques on the pedestals (the exhibit stone covers naming).
+- **Newton's arm angles outward** rather than straight forward. A straight-forward arm at yaw 0 points at the camera and foreshortens to nothing — the first render showed his apple as a sphere apparently stuck to his chest.
 
 ## Remaining before this can ship
 
 1. Human review signature (Q-023).
-2. Rename stone `SCIENTIST STATUES` → `ISAAC NEWTON · NIKOLA TESLA · ALBERT EINSTEIN`.
-3. Confirm which Einstein photograph to cite as reference (earlier = safer for public-domain claim).
-4. Factual card: state the user-decided substitution rationale for future readers.
-5. Consider individual name plaques on each mini-plinth in a follow-up pass.
+2. Rename stone → `NIKOLA TESLA · ISAAC NEWTON · ALBERT EINSTEIN`. **Note the ordering choice:** this is left-to-right visual order so a visitor can match stone to statue. Chronological order (Newton 1643 · Tesla 1856 · Einstein 1879) would be the more traditional museum convention but would not match what the visitor sees, because the user asked for Newton in the middle. Worth a decision.
+3. Confirm which Einstein photograph to cite as reference.
+4. Studio materials: Neon on both orb MeshParts, brass Metal on the main mesh.
+
+## History
+
+**Built 2026-07-26**, then reposed the same day. Two bugs during the repose, both caught before commit:
+
+**Figures sank through the plinth.** `join()` leaves the merged object's origin wherever `parts[0]` happened to sit — a leg or robe centred at mid-height, around z≈8.2. Setting `location = (slot_x, 0, 0)` then dragged that origin down to zero, sinking every figure ~8 studs while the separately-placed orbs stayed put. Caught by the reported numbers, not the render: the main mesh measured 9.32 tall where ~15 was expected, and total Z didn't reconcile with the parts. Fixed by leaving `location.z` alone.
+
+**Arms pointed 90° wrong and read as detached stubs.** The arm cylinders used `rot=(0, pitch, yaw + π/2)`. Blender's XYZ euler composes as `Rz @ Ry`, so `+Z` maps to `(sin p·cos(yaw+90°), sin p·sin(yaw+90°), cos p)` — the `+π/2` introduced a 90° horizontal error. Hands and props were computed from the direction vector directly and so sat correctly, which is exactly why the figures looked broken rather than merely wrong. Replaced with the axis-angle `cyl_along` construction proven in the B-DNA generator.
+
+## Regenerating
+
+```
+blender --background --factory-startup \
+  --python art/exhibits/ScientistStatues/generate.py \
+  -- --out art/exhibits/ScientistStatues/build/ScientistStatues.glb
+```
+
+Fails the build on triangle cap, shell overhang, or if the export is not exactly the three expected objects.
